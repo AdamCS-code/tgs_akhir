@@ -1,0 +1,134 @@
+\chapter{TINJAUAN PUSTAKA}
+\label{bab:tinjauan-pustaka}
+
+\section{Cosine Similarity}
+\label{sec:cosine-similarity}
+
+\emph{Cosine Similarity} merupakan metode pengukuran kemiripan yang bekerja dengan menghitung nilai kosinus dari sudut yang terbentuk antara dua vektor dalam ruang berdimensi-$n$. Berbeda dengan pengukuran jarak Euclidean yang berfokus pada besaran mutlak antar titik, \emph{Cosine Similarity} mengevaluasi orientasi relatif dua vektor sehingga lebih andal dalam membandingkan entitas yang direpresentasikan sebagai vektor atribut numerik. Secara matematis, metode ini dirumuskan sebagai berikut \parencite{nurmuthia2025}:
+
+\begin{equation}
+  \mathrm{SIM}_{cos}(\vec{q}_t, \vec{d}_t) = \frac{\vec{q}_t \cdot \vec{d}_t}{\lVert \vec{q}_t \rVert \times \lVert \vec{d}_t \rVert}
+  \label{eq:cosine}
+\end{equation}
+
+\noindent di mana $\vec{q}_t$ merepresentasikan vektor kueri (dalam konteks penelitian ini, vektor atribut pemain target), $\vec{d}_t$ merepresentasikan vektor data pembanding, dan hasil perkalian \emph{dot product} dibagi dengan perkalian magnitudo keduanya. Nilai yang dihasilkan berada dalam rentang $[0, 1]$, di mana nilai yang semakin mendekati 1 menunjukkan tingkat kemiripan yang semakin tinggi.
+
+Dalam konteks sistem rekomendasi berbasis \emph{content-based filtering}, \emph{Cosine Similarity} efektif dalam mencocokkan profil suatu entitas dengan kandidat lain berdasarkan kesamaan atribut yang direpresentasikan sebagai vektor fitur. \textcite{nurmuthia2025} mengaplikasikan pendekatan ini pada sistem rekomendasi parfum, di mana setiap item direpresentasikan sebagai vektor fitur multidimensi mencakup atribut seperti famili olfaktori, gender, dan waktu penggunaan. Sistem berhasil menghasilkan rekomendasi dengan nilai presisi sebesar 0,7778 menggunakan metode \emph{Cosine Similarity}, membuktikan efektivitas metode ini dalam skenario pencarian kemiripan berbasis vektor atribut.
+
+Prinsip yang sama dapat diadaptasi sepenuhnya ke dalam konteks \emph{player profiling} dan rekomendasi \emph{scout} sepak bola. Dalam penelitian ini, setiap pemain direpresentasikan sebagai sebuah vektor yang dimensinya terdiri dari atribut teknis dan fisik yang telah dinormalisasi. Ketika pengguna, baik analis maupun \emph{scout}, memasukkan seorang pemain target, sistem akan merepresentasikan atribut pemain tersebut sebagai sebuah vektor kueri, kemudian menghitung nilai \emph{cosine similarity} antara vektor tersebut dengan vektor seluruh pemain lain yang berada di dalam klaster gaya bermain yang sama. Pemain-pemain dengan nilai \emph{cosine similarity} tertinggi, atau yang mendekati nilai 1, akan ditampilkan sebagai kandidat rekomendasi utama yang memiliki karakteristik bermain paling serupa dengan pemain target.
+
+\section{Pengukuran Kemiripan dalam Analitik Sepak Bola}
+\label{sec:kemiripan-analitik}
+
+Tantangan dalam mengukur kemiripan pada domain olahraga, khususnya sepak bola, memiliki kompleksitas yang jauh melebihi domain lain seperti teks atau citra. Hal ini disebabkan oleh sifat data olahraga yang multidimensi, berskala beragam, serta sarat dengan konteks taktis yang tidak selalu tergambarkan oleh satu dimensi pengukuran tunggal. \textcite{stein2019} mengemukakan bahwa ukuran jarak dan kemiripan yang umum digunakan dalam analisis trajektori, seperti \emph{Dynamic Time Warping} (DTW), \emph{Longest Common Subsequence} (LCSS), dan \emph{Edit Distance on Real Sequence} (EDR), pada dasarnya hanya mempertimbangkan fitur \emph{spatiotemporal} seperti bentuk dan kecepatan gerakan. Pendekatan-pendekatan tersebut terbukti tidak mencukupi untuk menangkap esensi taktis yang sesungguhnya dari sebuah gerakan dalam sepak bola, karena pergerakan dalam olahraga tim invasif seperti sepak bola mencakup jauh lebih banyak aspek daripada sekadar rangkaian lokasi spasial.
+
+Tantangan mendasar dalam analitik sepak bola adalah mendefinisikan ``kesamaan'' antar pemain atau situasi permainan secara komprehensif. \textcite{stein2019} mengusulkan sebuah ukuran kemiripan multimodal yang mengintegrasikan fitur spasial, konteks pemain, data kejadian (\emph{event}), serta tekanan (\emph{pressure}) ke dalam satu kerangka perhitungan terpadu melalui formula agregasi berbobot:
+
+\begin{equation}
+  D(P, Q) = \sum_{i \in I} D_i(P, Q) \cdot w_i^{context},
+  \quad I = \{geo, event, player, pressing\}
+  \label{eq:stein-distance}
+\end{equation}
+
+Terdapat dua prinsip penting dari penelitian \textcite{stein2019} yang secara langsung relevan dan dapat diadopsi dalam penelitian ini. Pertama adalah prinsip representasi multidimensi, yaitu bahwa setiap entitas dalam sepak bola, baik itu gerakan maupun pemain harus direpresentasikan melalui sekumpulan fitur yang mencakup berbagai aspek kontribusinya, bukan hanya satu atau dua statistik tunggal. Prinsip ini menjadi justifikasi teoritis bagi proses \emph{feature engineering} dalam penelitian ini, di mana atribut teknis dan fisik pemain dipilih secara cermat untuk membangun representasi vektor yang komprehensif dan merepresentasikan gaya bermain secara holistik.
+
+Kedua adalah prinsip normalisasi fitur sebelum pengukuran kemiripan. \textcite{stein2019} secara eksplisit menekankan bahwa fitur-fitur yang memiliki rentang nilai dan satuan yang berbeda harus dinormalisasi terlebih dahulu agar setiap dimensi memberikan kontribusi yang setara dalam perhitungan kemiripan, sehingga tidak ada satu fitur pun yang secara artifisial mendominasi hasil perhitungan hanya karena skalanya yang lebih besar. Sebagai contoh, dalam penelitian \textcite{stein2019}, kecepatan dinormalisasi berdasarkan pengetahuan domain tentang batas kecepatan wajar dalam sepak bola, sementara jarak dinormalisasi berdasarkan dimensi lapangan. Prinsip ini secara langsung mendukung dan memvalidasi penggunaan \emph{Min-Max Normalization} pada tahap pra-pemrosesan data dalam penelitian ini, di mana seluruh atribut numerik pemain diskalakan ke dalam rentang $[0, 1]$ sebelum proses \emph{clustering} maupun perhitungan \emph{cosine similarity} dilakukan. Tanpa normalisasi, fitur-fitur dengan skala besar seperti total jarak berlari dalam meter akan mendominasi perhitungan dan mengesampingkan fitur-fitur penting berskala kecil seperti persentase umpan kunci per pertandingan.
+
+Selain itu, penelitian \textcite{stein2019} juga memberikan gambaran yang jelas tentang bagaimana validasi hasil kemiripan sebaiknya dilakukan dalam domain sepak bola. Sistem yang mereka kembangkan dievaluasi melalui studi ahli yang melibatkan pelatih dan analis profesional berpengalaman, yang diminta untuk menilai secara langsung apakah hasil pencarian kemiripan yang dihasilkan sistem sesuai dengan pengetahuan domain mereka. Pendekatan validasi semacam ini, yang dalam penelitian ini diadaptasi dalam bentuk visualisasi \emph{radar chart} untuk memverifikasi kemiripan profil pemain yang direkomendasikan, terbukti menjadi metode evaluasi yang efektif dan bernilai tinggi dari perspektif kepraktisan sistem di dunia nyata.
+
+\section{Sistem Rekomendasi Pemandu Bakat Berbasis Kemiripan Pemain}
+\label{sec:sistem-rekomendasi}
+
+\textcite{rinaldi2024} memperkenalkan FPSRec, sebuah sistem rekomendasi pemain sepak bola yang secara khusus mengintegrasikan teknik kemiripan berbasis vektor dengan kecerdasan buatan generatif. Dalam sistem ini, setiap pemain direpresentasikan sebagai sebuah vektor berdimensi tinggi di mana setiap dimensinya merepresentasikan statistik performa seperti jumlah gol, \emph{assist}, usia, dan waktu bermain. Pendekatan ini secara konseptual selaras dengan metodologi yang diusulkan dalam penelitian ini.
+
+\textcite{rinaldi2024} membandingkan dua pendekatan utama dalam komponen pencarian pemain serupa, yaitu \emph{Cosine Similarity} murni dan kombinasi K-Means \emph{clustering} dengan \emph{Cosine Similarity}. Hasil evaluasi menggunakan korelasi Spearman dan Kendall Tau terhadap \emph{ranking} yang disediakan oleh FBRef menunjukkan bahwa \emph{Cosine Similarity} secara konsisten menghasilkan \emph{ranking} yang lebih berkorelasi dengan penilaian ahli sepak bola dibandingkan pendekatan K-Means saja. Hal ini sejalan dengan keputusan penelitian ini untuk menggunakan \emph{Cosine Similarity} sebagai inti mekanisme rekomendasi, dengan K-Means berfungsi sebagai tahap segmentasi awal untuk mempersempit ruang pencarian. Lebih lanjut, \textcite{rinaldi2024} juga mengkonfirmasi pentingnya normalisasi \emph{MinMaxScaler} sebelum proses perhitungan kemiripan dilakukan guna memastikan tidak ada fitur dengan skala besar yang mendominasi hasil komputasi.
+
+\section{Silhouette Coefficient sebagai Metrik Evaluasi Kualitas Klaster}
+\label{sec:silhouette}
+
+\emph{Silhouette Coefficient} merupakan salah satu metrik internal yang paling banyak digunakan untuk mengevaluasi kualitas hasil klasterisasi tanpa memerlukan label data aktual (\emph{ground truth}). Metrik ini pertama kali diusulkan oleh \textcite{rousseeuw1987} sebagai alat bantu grafis sekaligus kuantitatif untuk menginterpretasikan dan memvalidasi hasil analisis klaster \parencite{tao2023}.
+
+Secara matematis, nilai \emph{silhouette} untuk setiap titik data $i$ dihitung berdasarkan dua besaran utama. Pertama, $x_i$ yang merepresentasikan rata-rata jarak antara sampel $i$ dengan seluruh sampel lain di dalam klaster yang sama (\emph{intra-cluster distance}). Kedua, $y_i$ yang merepresentasikan nilai rata-rata jarak terkecil antara sampel $i$ dengan sampel-sampel di klaster tetangga terdekat yang berbeda (\emph{nearest-cluster distance}). Formula lengkapnya adalah sebagai berikut:
+
+\begin{equation}
+  s_i = \frac{y_i - x_i}{\max(x_i, y_i)}
+  \label{eq:silhouette}
+\end{equation}
+
+Nilai koefisien \emph{silhouette} berada pada rentang $[-1, 1]$. Nilai yang mendekati 1 mengindikasikan bahwa titik data telah dikelompokkan ke dalam klaster yang tepat dan terpisah tegas dari klaster lainnya, nilai yang mendekati 0 mengindikasikan adanya tumpang tindih antar klaster, sementara nilai negatif mengindikasikan kemungkinan kesalahan pengelompokan \parencite{tao2023}.
+
+Dalam konteks penentuan jumlah klaster optimal, \emph{Silhouette Coefficient} diaplikasikan dengan cara menghitung nilai rata-rata koefisien untuk berbagai nilai $K$, kemudian memilih $K$ yang menghasilkan nilai tertinggi. \textcite{tao2023} mendemonstrasikan penerapan strategi ini pada optimasi tata letak ladang angin (\emph{wind farm}), di mana nilai puncak \emph{Silhouette Coefficient} membimbing penentuan jumlah klaster optimal yang menyeimbangkan antara pemisahan dan kekompakan klaster. \textcite{udhayasuriyan2025} juga memanfaatkan \emph{Silhouette Score} bersama \emph{Davies-Bouldin Index} sebagai metrik evaluasi kuantitatif utama dalam kerangka kerja Auto-K K-Means, dan menemukan bahwa pada ruang fitur berdimensi tinggi (\emph{high-dimensional}), nilai \emph{Silhouette Score} cenderung rendah di seluruh metode yang diuji --- sebuah temuan yang menggarisbawahi tantangan separabilitas klaster pada data yang kompleks.
+
+Relevansi \emph{Silhouette Coefficient} bagi penelitian ini terletak pada kemampuannya mengukur secara kuantitatif seberapa tepat setiap pemain sepak bola dikelompokkan ke dalam arketipe gaya bermainnya. Nilai koefisien yang tinggi akan membuktikan bahwa klaster-klaster gaya bermain yang terbentuk benar-benar kompak secara internal dan terpisah tegas satu sama lain, sehingga validitas fase klasterisasi dalam \emph{pipeline} penelitian ini dapat dikonfirmasi secara matematis.
+
+\section{Davies-Bouldin Index sebagai Metrik Evaluasi Separasi Klaster}
+\label{sec:dbi}
+
+\emph{Davies-Bouldin Index} (DBI) merupakan metrik validasi klaster internal yang bekerja dengan prinsip bahwa klasterisasi yang baik harus menghasilkan klaster-klaster yang sekaligus kompak secara internal (\emph{intra-cluster homogeneity}) dan terpisah jauh satu sama lain secara eksternal (\emph{inter-cluster separation}) \parencite{rojasthomas2013}. Secara formal, DBI didefinisikan sebagai:
+
+\begin{equation}
+  V_{DB} = \frac{1}{k} \sum_{i=1}^{k} R_i,
+  \quad R_i = \max_{i \neq j} \{ R_{ij} \},
+  \quad R_{ij} = \frac{S_i + S_j}{D_{ij}}
+  \label{eq:dbi}
+\end{equation}
+
+\noindent Di sini, $S_i$ merepresentasikan ukuran dispersi (penyebaran) data di dalam klaster $C_i$, sementara $D_{ij}$ merepresentasikan jarak antar pusat (\emph{centroid}) klaster $C_i$ dan $C_j$. Berbeda dengan \emph{Silhouette Coefficient}, interpretasi DBI bersifat terbalik: semakin kecil nilai DBI (mendekati 0), semakin baik kualitas klasterisasi, karena hal ini menandakan bahwa klaster-klaster yang terbentuk bersifat padat di dalam namun berjauhan satu sama lain \parencite{rojasthomas2013}.
+
+\textcite{rojasthomas2013} mengidentifikasi keterbatasan mendasar dari DBI versi orisinal, yakni penggunaan jarak Euclidean antar \emph{centroid} sebagai ukuran separasi klaster tidak mempertimbangkan geometri distribusi data secara keseluruhan. Situasi dapat muncul di mana dua klaster yang \emph{centroid}-nya berdekatan justru dianggap ``mirip'' oleh DBI, meskipun distribusi data aktualnya terpisah jauh. Sebagai solusi, mereka mengusulkan varian \emph{cylindrical distance} yang mengkalkulasi densitas data di sepanjang segmen garis yang menghubungkan dua \emph{centroid}, sehingga menghasilkan pengukuran separasi yang lebih akurat secara geometris. Eksperimen pada delapan dataset nyata membuktikan bahwa versi baru ini mengungguli DBI orisinal pada empat dataset, dengan performa setara pada dua dataset lainnya.
+
+Dalam kerangka Auto-K K-Means, \textcite{udhayasuriyan2025} menggunakan DBI sebagai salah satu metrik evaluasi utama dan melaporkan bahwa pendekatan mereka menghasilkan DBI sebesar 10,80, yang dinilai kompetitif dibandingkan \emph{Fixed} K-Means (DBI = 9,54) meskipun proses penentuan $K$ dilakukan sepenuhnya secara otomatis. Penggunaan DBI di sini memperkuat posisinya sebagai metrik yang relevan untuk membandingkan kualitas klasterisasi antar konfigurasi $K$ yang berbeda.
+
+Dalam penelitian ini, DBI digunakan berdampingan dengan \emph{Silhouette Coefficient} untuk memberikan perspektif evaluasi yang komplementer. Sementara \emph{Silhouette Coefficient} mengukur kekompakan relatif setiap titik data terhadap klasternya, DBI mengukur rasio dispersi internal terhadap separasi eksternal secara agregat. Kombinasi keduanya memberikan gambaran holistik tentang seberapa baik algoritma K-Means berhasil membentuk arketipe gaya bermain pemain sepak bola yang bermakna secara taktis.
+
+\section{Elbow Method untuk Penentuan Jumlah Klaster Optimal}
+\label{sec:elbow}
+
+\emph{Elbow Method} adalah salah satu pendekatan heuristik paling umum untuk menentukan jumlah klaster optimal ($K$) dalam algoritma K-Means. Metode ini bekerja dengan memplotkan nilai \emph{Sum of Squared Errors} (SSE) --- yakni total kuadrat jarak setiap titik data ke \emph{centroid} klasternya --- terhadap berbagai nilai $K$, kemudian mengidentifikasi titik ``siku'' (\emph{elbow point}) di mana penurunan SSE mulai melambat secara signifikan \parencite{udhayasuriyan2025}. Titik ini menjadi kandidat nilai $K$ optimal karena penambahan klaster lebih lanjut setelahnya tidak lagi memberikan keuntungan yang proporsional dalam mereduksi heterogenitas data.
+
+Secara matematis, SSE untuk $K$ klaster diformulasikan sebagai:
+
+\begin{equation}
+  \mathrm{SSE}(K) = \sum_{i=1}^{K} \sum_{x \in C_i} \lVert x - C_i \rVert^2
+  \label{eq:sse}
+\end{equation}
+
+Meskipun mudah diinterpretasikan secara visual, kelemahan utama \emph{Elbow Method} konvensional adalah sifatnya yang subjektif karena memerlukan inspeksi manual untuk mengidentifikasi titik siku \parencite{udhayasuriyan2025}. Pada kasus nyata, kurva SSE seringkali tidak membentuk siku yang tajam, melainkan melengkung secara bertahap, sehingga penentuan $K$ optimal menjadi ambigu dan rentan terhadap bias peneliti.
+
+Untuk mengatasi keterbatasan ini, \textcite{udhayasuriyan2025} mengusulkan pendekatan otomatis berbasis deteksi kelengkungan turunan kedua (\emph{second derivative curvature detection}). Pendekatan ini menghitung turunan pertama dari kurva SSE untuk menangkap laju perubahan, kemudian menghitung turunan kedua untuk mengidentifikasi titik di mana laju perubahan itu sendiri berubah paling drastis --- yang secara matematis mendefinisikan letak siku secara objektif:
+
+\begin{equation}
+  \mathrm{SSE}''(K) = \frac{\mathrm{SSE}'(K+1) - \mathrm{SSE}'(K)}{(K+1) - K}
+  \label{eq:sse-2nd}
+\end{equation}
+
+Nilai $K$ optimal dipilih sebagai:
+
+\begin{equation}
+  K^{*} = \arg\min_{k \in K} \mathrm{SSE}''(k)
+  \label{eq:k-optimal}
+\end{equation}
+
+Dengan pendekatan ini, \textcite{udhayasuriyan2025} berhasil mengeliminasi kebutuhan intervensi manusia dalam proses penentuan $K$, menjadikan kerangka kerja K-Means mereka sepenuhnya otomatis dan berbasis data.
+
+Dalam penelitian ini, \emph{Elbow Method} diterapkan pada tahap awal fase klasterisasi untuk menentukan jumlah arketipe gaya bermain ($K$) yang optimal secara komputasional sebelum algoritma K-Means dijalankan. Dengan mengamati di mana penurunan nilai SSE mulai melandai, penelitian ini menghindari penetapan $K$ secara arbitrer yang dapat menghasilkan klaster yang terlalu granular atau terlalu umum untuk merepresentasikan keragaman taktis pemain sepak bola secara bermakna.
+
+\section{Algoritma K-Means Clustering}
+\label{sec:kmeans}
+
+K-Means merupakan salah satu algoritma \emph{unsupervised learning} yang paling banyak digunakan dalam analisis data berdimensi tinggi, pertama kali diformulasikan secara formal oleh \textcite{lloyd1982} dalam konteks kuantisasi sinyal, dan sejak saat itu diadopsi secara luas di berbagai domain ilmiah, mulai dari pengenalan pola, bioinformatika, hingga analitik olahraga. Tujuan utama K-Means adalah mempartisi sekumpulan $n$ titik data ke dalam $K$ kelompok yang saling eksklusif, sedemikian rupa sehingga setiap titik data termasuk ke dalam klaster dengan \emph{centroid} (pusat massa) yang paling dekat dengannya \parencite{jain2010}.
+
+Secara matematis, K-Means bekerja dengan meminimalkan fungsi objektif yang dikenal sebagai \emph{Within-Cluster Sum of Squares} (WCSS), yang didefinisikan sebagai berikut \parencite{lloyd1982}:
+
+\begin{equation}
+  J = \sum_{k=1}^{K} \sum_{x_i \in C_k} \lVert x_i - \mu_k \rVert^2
+  \label{eq:wcss}
+\end{equation}
+
+\noindent di mana $x_i$ merepresentasikan titik data ke-$i$, $C_k$ merepresentasikan himpunan titik data dalam klaster ke-$k$, dan $\mu_k$ merepresentasikan vektor \emph{centroid} dari klaster ke-$k$. Dengan meminimalkan nilai $J$, algoritma mendorong terbentuknya klaster yang kompak secara internal (\emph{intra-cluster cohesion}) sekaligus terpisah jauh satu sama lain (\emph{inter-cluster separation}).
+
+Proses iteratif K-Means terdiri atas dua langkah utama yang dieksekusi secara bergantian hingga konvergensi tercapai: (1) Tahap \emph{Assignment}, di mana setiap titik data ditetapkan ke klaster dengan \emph{centroid} terdekat berdasarkan jarak Euclidean; dan (2) Tahap \emph{Update}, di mana posisi \emph{centroid} diperbarui sebagai rata-rata aritmetika dari seluruh titik data yang tergabung di dalamnya. Algoritma dinyatakan konvergen apabila tidak ada lagi perubahan penugasan klaster antara dua iterasi berturut-turut \parencite{jain2010}.
+
+Salah satu keterbatasan K-Means konvensional terletak pada sensitivitasnya terhadap inisialisasi \emph{centroid} awal yang dipilih secara acak, yang dapat menyebabkan algoritma terperangkap pada solusi optimal lokal. Untuk mengatasi kelemahan ini, \textcite{arthur2007} mengusulkan varian inisialisasi K-Means++, yang memilih \emph{centroid} awal secara probabilistik sehingga setiap \emph{centroid} baru dipilih dengan peluang yang proporsional terhadap jarak kuadratnya dari \emph{centroid} yang telah terpilih sebelumnya. Strategi ini terbukti menghasilkan nilai fungsi objektif yang lebih kecil dan konvergensi yang lebih cepat, dengan garansi aproksimasi $O(\log K)$ terhadap solusi optimal global \parencite{arthur2007}.
+
+Dalam konteks penelitian ini, K-Means dengan inisialisasi K-Means++ diterapkan pada fase \emph{player profiling} untuk mengklasifikasikan pemain sepak bola non-kiper ke dalam arketipe gaya bermain yang distinktif. Setiap pemain direpresentasikan sebagai vektor fitur multidimensi yang mencakup atribut teknis dan fisik yang telah dinormalisasi, sehingga algoritma dapat mengidentifikasi pengelompokan alami dalam ruang atribut tersebut. Hasil klasterisasi ini kemudian menjadi fondasi bagi fase rekomendasi berbasis \emph{Cosine Similarity} yang dibahas pada tahapan metodologi penelitian.

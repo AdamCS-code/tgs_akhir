@@ -1,0 +1,68 @@
+\chapter{METODOLOGI PENELITIAN}
+\label{bab:metodologi}
+
+Bab ini menjelaskan metodologi yang digunakan untuk melaksanakan penelitian ini. Pembahasan pada bab ini meliputi pendekatan penelitian, tahapan penelitian yang sistematis, dan instrumen atau evaluasi pemodelan yang akan diterapkan.
+
+\section{Pendekatan Penelitian}
+\label{sec:pendekatan}
+
+Penelitian ini akan dilakukan menggunakan pendekatan \textbf{kuantitatif deskriptif-komputasional} \emph{(non-eksperimental)}. Penelitian kuantitatif didasarkan pada pengumpulan dan pemrosesan data angka atau variabel yang dapat diukur secara statistik. Berbeda dengan penelitian eksperimental yang melibatkan kelompok perlakuan dan kelompok kontrol untuk menguji hubungan kausal, penelitian ini tidak melakukan intervensi terhadap subjek; melainkan menganalisis dan mengelompokkan data atribut pemain sepak bola yang telah tersedia. Melalui pendekatan ini, sebuah model \emph{machine learning pipeline} secara kuantitatif memproses \emph{raw event data} pemain sepak bola, mengelompokkannya (klasterisasi), dan kemudian menghitung jarak vektor kemiripan secara matematis untuk memberikan rekomendasi yang terukur.
+
+\section{Tahapan Penelitian}
+\label{sec:tahapan}
+
+Penelitian ini dilaksanakan melalui serangkaian tahapan utama untuk memastikan alur penyelesaian masalah berjalan secara sistematis.
+
+\subsection{Tahap Identifikasi Masalah}
+\label{subsec:identifikasi}
+
+Pada tahap ini, penulis bertujuan untuk mendefinisikan permasalahan dalam dunia \emph{scouting} modern. Berdasarkan observasi dan analisis kesenjangan, ditemukan bahwa \emph{scouting} tradisional seringkali bias dan memakan waktu. Identifikasi ini berujung pada perumusan solusi integrasi analitik yang kemudian dituangkan dalam proposal ini.
+
+\subsection{Tahap Studi Literatur}
+\label{subsec:literatur}
+
+Tahap ini menjadi landasan teoritis dengan mengidentifikasi sumber-sumber literatur relevan dari \emph{online database} (seperti ScienceDirect dan Google Scholar). Penulis mengkaji paper terkait penerapan kecerdasan buatan, pemrosesan \emph{event data} sepak bola, serta algoritma \emph{clustering}. Analisis terhadap penelitian terdahulu (seperti model klasifikasi \textcite{shen2026}) membantu menemukan \emph{research gap} di mana sistem rekomendasi berbasis kemiripan vektor belum terintegrasi secara utuh dengan pemodelan klaster gaya bermain.
+
+\subsection{Tahap Pengumpulan dan Pra-pemrosesan Data}
+\label{subsec:pra-pemrosesan}
+
+Pada tahap ini, dataset statistik performa pemain sepak bola profesional akan dikumpulkan dari penyedia data olahraga (seperti \emph{StatsBomb Open Data} atau FBRef, dengan FIFA22 Official Players Dataset sebagai sumber utama yang telah dipaparkan pada Bab~\ref{bab:pendahuluan}). Data tersebut kemudian melalui tahap pra-pemrosesan (\emph{preprocessing}), di antaranya:
+
+\begin{itemize}
+  \item \textbf{Exploratory Data Analysis (EDA)}: Melakukan analisis eksploratif awal untuk memahami distribusi statistik setiap variabel dan mendeteksi adanya data anomali (\emph{outliers}) secara visual.
+  \item \textbf{Data Cleaning}: Membersihkan \emph{missing values} dan menghilangkan data pemain berposisi kiper (mengingat fokus evaluasi hanya pada \emph{outfield players}).
+  \item \textbf{Feature Engineering}: Memilih variabel metrik teknis dan fisik yang relevan untuk merepresentasikan kontribusi taktis.
+  \item \textbf{Data Scaling}: Menggunakan standarisasi, seperti \emph{Min-Max Normalization}, untuk menskalakan fitur numerik ke dalam rentang $[0, 1]$.
+\end{itemize}
+
+\subsection{Tahap Pengolahan dan Analisis Data (Pemodelan)}
+\label{subsec:pemodelan}
+
+Tahap komputasi inti dari penelitian ini dibagi menjadi dua fase algoritma:
+
+\begin{enumerate}
+  \item \textbf{Fase Clustering}: Menggunakan algoritma K-Means \emph{clustering} untuk menstrukturkan data tak berlabel ke dalam penemuan pola tersembunyi \parencite{shen2026}. Penulis akan menggunakan \emph{Elbow Method} (lihat Persamaan~\eqref{eq:sse} pada Bab~\ref{bab:tinjauan-pustaka}) untuk menentukan jumlah arketipe gaya bermain (jumlah klaster $K$) yang optimal secara komputasi.
+  \item \textbf{Fase Rekomendasi (Cosine Similarity)}: Setelah pemain masuk ke dalam klaster gaya bermainnya masing-masing, sistem rekomendasi diterapkan. Saat pengguna memasukkan pemain target (pemain incaran atau yang cedera), model akan merepresentasikan atribut pemain target sebagai vektor, kemudian membandingkannya dengan vektor pemain lain di klaster yang sama menggunakan perhitungan \emph{Cosine Similarity} (Persamaan~\eqref{eq:cosine}). Model akan menghasilkan daftar peringkat (\emph{ranking}) pemain alternatif dengan nilai kemiripan tertinggi (mendekati nilai 1).
+\end{enumerate}
+
+\subsection{Tahap Evaluasi Model dan Penarikan Kesimpulan}
+\label{subsec:evaluasi}
+
+Pada tahap akhir, penulis mengevaluasi performa model yang telah dibangun melalui dua pendekatan pengujian. Mengingat fase \emph{clustering} menggunakan pendekatan \emph{unsupervised learning} yang tidak memiliki label data aktual (\emph{ground truth}), pengujian akurasi tradisional tidak dapat dilakukan. Oleh karena itu, evaluasi model dibagi menjadi dua tahap validasi:
+
+\begin{enumerate}
+  \item \textbf{Evaluasi Kualitas Klaster (Metrik Internal)}: Pengujian ini bertujuan untuk mengukur secara kuantitatif dan matematis seberapa baik struktur klaster yang dibentuk oleh algoritma. Pengukuran dilakukan menggunakan indeks metrik internal --- \emph{Silhouette Coefficient} (Persamaan~\eqref{eq:silhouette}) dan \emph{Davies-Bouldin Index} (Persamaan~\eqref{eq:dbi}) --- yang formulasi dan interpretasinya telah dijabarkan pada Bab~\ref{bab:tinjauan-pustaka}.
+
+  \item \textbf{Validasi Heuristik Sistem Rekomendasi}: Untuk mengevaluasi keandalan (\emph{reliability}) hasil rekomendasi dari perhitungan \emph{Cosine Similarity}, validasi dilakukan secara komparatif dan visual. Sistem akan menguji skenario pencarian pemain target, lalu hasil rekomendasi pemain substitusi divisualisasikan menggunakan grafik jaring laba-laba (\emph{Radar Chart}). Apabila kurva distribusi metrik performa antara pemain target dan pemain yang direkomendasikan saling tumpang tindih (\emph{overlapping}) dengan bentuk yang identik, maka rekomendasi tersebut dibuktikan valid, akurat, dan masuk akal secara ilmu taktik sepak bola (\emph{domain knowledge}).
+\end{enumerate}
+
+Dari hasil evaluasi terintegrasi pada kedua tahap tersebut, penulis akan menarik kesimpulan akhir untuk menjawab rumusan masalah secara menyeluruh serta menyusun saran pengembangan untuk sistem \emph{scouting} olahraga di masa mendatang.
+
+\section{Instrumen Penelitian}
+\label{sec:instrumen}
+
+Penelitian ini merupakan penelitian kuantitatif deskriptif-komputasional. Oleh karena itu, instrumen utama yang digunakan dalam penelitian ini adalah perangkat lunak komputasi dan pemodelan algoritma \emph{machine learning}. Penulis akan menggunakan bahasa pemrograman Python beserta pustaka (\emph{library}) komputasi data saintifik seperti \emph{Scikit-learn}, \emph{Pandas}, dan \emph{NumPy} sebagai instrumen perangkat lunak untuk mengolah data dan membangun model.
+
+Himpunan data yang akan digunakan sebagai objek penelitian berupa \emph{event data} atau statistik performa pemain --- secara spesifik FIFA22 Official Players Dataset (lihat Bab~\ref{bab:pendahuluan} Sub-bab~\ref{subsec:dataset}) --- yang diperoleh dari Kaggle. Secara algoritmik, instrumen pemodelan dalam penelitian ini dibagi menjadi dua. Pertama, algoritma K-Means \emph{Clustering} digunakan sebagai instrumen untuk memproses data performa yang telah distandardisasi guna mendeteksi dan mengelompokkan arketipe gaya bermain pemain secara otomatis. Kedua, perhitungan \emph{Cosine Similarity} digunakan sebagai instrumen pencarian untuk membandingkan vektor metrik antarpemain di dalam klaster yang sama guna memberikan skor kemiripan.
+
+Selanjutnya, untuk mengukur keberhasilan model, instrumen evaluasi yang digunakan adalah persamaan matematis \emph{Silhouette Coefficient} dan \emph{Davies-Bouldin Index} (DBI) untuk validasi kualitas pengelompokan data, serta instrumen visual berupa \emph{Radar Chart} untuk memvalidasi kelogisan hasil rekomendasi secara taktis.

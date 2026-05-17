@@ -1,0 +1,157 @@
+\documentclass[12pt,a4paper]{report}
+
+% ===== Encoding & bahasa =====
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[bahasa]{babel}
+
+% ===== Tipografi =====
+\usepackage{times}                % Times New Roman
+\usepackage{setspace}             % spasi
+\onehalfspacing                   % 1.5 spasi
+\usepackage{microtype}
+
+% ===== Layout halaman =====
+\usepackage[
+  a4paper,
+  left=4cm, right=3cm,
+  top=3cm, bottom=3cm
+]{geometry}
+
+% ===== Heading bab =====
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\Large\centering}
+  {BAB \thechapter}{0.5em}{\Large}
+\titlespacing*{\chapter}{0pt}{-20pt}{20pt}
+
+\titleformat{\section}{\normalfont\bfseries\large}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalfont\bfseries\normalsize}{\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}{\normalfont\bfseries\itshape\normalsize}{\thesubsubsection.}{0.5em}{}
+
+% ===== Paket pendukung =====
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue
+}
+\usepackage{url}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\setlist{itemsep=2pt, topsep=4pt}
+
+% ===== Matematika =====
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+
+% ===== Sitasi =====
+\usepackage[backend=biber, style=apa, citestyle=authoryear]{biblatex}
+% biblatex-apa tidak menyediakan file bahasa Indonesia (indonesian-apa.lbx),
+% jadi petakan babel "bahasa" ke english-apa agar bibstring (year, month,
+% dst.) ter-render dengan benar — bukan literal "labelyearlabelyear...".
+\DeclareLanguageMapping{bahasa}{english-apa}
+\addbibresource{references.bib}
+
+% ===== Penomoran halaman =====
+\usepackage{fancyhdr}
+\pagestyle{plain}
+
+% ===== Indentasi paragraf =====
+\setlength{\parindent}{1.27cm}
+\setlength{\parskip}{0pt}
+
+% ===== Catatan kaki =====
+\usepackage{footmisc}
+
+% ===== Informasi dokumen =====
+\title{Player Profiling dan Rekomendasi Scout Sepak Bola
+  Menggunakan Metode Clustering dan Cosine Similarity}
+\author{Kelompok Moses Sedo --- F08}
+\date{\today}
+
+\begin{document}
+
+% ----------------------------------------------------------------
+% Halaman judul
+% Catatan: tambahkan file logo (misalnya logo-ui.png) ke folder
+% project. Logo UI resmi dapat diunduh dari situs UI atau
+% halaman repositori internal fakultas Anda.
+% ----------------------------------------------------------------
+\begin{titlepage}
+  \centering
+
+  {\Large\bfseries RESEARCH PROPOSAL\par}
+  \vspace{1.5cm}
+
+  {\LARGE\bfseries Player Profiling dan Rekomendasi Scout\\
+    Sepak Bola Menggunakan Metode Clustering\\
+    dan Cosine Similarity\par}
+  \vspace{2cm}
+
+  % --- Logo Universitas Indonesia ---
+  % Ganti "logo-UI.png" dengan nama file logo yang Anda upload.
+  % Width 3.5cm cukup proporsional untuk Makara UI.
+  \includegraphics[width=3.5cm]{logo-UI.png}\\[1.5cm]
+
+  {\large\bfseries Kelompok Moses Sedo --- F08\par}
+  \vspace{0.8cm}
+
+  % --- Daftar anggota kelompok ---
+  {\large
+    \begin{tabular}{l@{\hspace{1.5cm}}l}
+      Muhammad Naufal Ramadhan      & 2306241700 \\[0.3em]
+      Mohamad Rafli Hidayat         & 2306245831 \\[0.3em]
+      Adam Caldipawell Sembiring    & 2306227160 \\[0.3em]
+      William Alexander             & 2306226914 \\[0.3em]
+      Paima Ishak Melkisedek Purba  & 2306275986 \\
+    \end{tabular}\par}
+
+  \vfill
+  {\large
+    PROGRAM STUDI Ilmu Komputer\\
+    FAKULTAS Ilmu Komputer\\
+    UNIVERSITAS INDONESIA\\
+    \the\year\par}
+\end{titlepage}
+
+% ----------------------------------------------------------------
+% Abstrak
+% ----------------------------------------------------------------
+\chapter*{ABSTRAK}
+\addcontentsline{toc}{chapter}{ABSTRAK}
+
+Penelitian ini bertujuan untuk mengatasi tantangan dalam proses rekrutmen pemain sepak bola modern yang sering kali terkendala oleh subjektivitas pemandu bakat dan besarnya volume data \emph{spatiotemporal}. Melalui pendekatan kuantitatif deskriptif-komputasional, penelitian ini mengintegrasikan algoritma \emph{Clustering} (K-Means) untuk memetakan profil gaya bermain pemain (\emph{player profiling}) secara objektif dan metode \emph{Cosine Similarity} untuk membangun sistem rekomendasi pemain alternatif berdasarkan kemiripan vektor atribut teknis serta fisik. Tahapan penelitian meliputi pra-pemrosesan data performa pemain non-kiper, penentuan klaster arketipe pemain, hingga evaluasi akurasi rekomendasi menggunakan metrik internal dan perbandingan visual \emph{radar chart}. Hasil dari pengembangan sistem ini diharapkan dapat menjadi alat bantu strategis bagi manajemen klub dan analisis untuk mengidentifikasi bakat secara lebih efisien, akurat, dan menguntungkan secara finansial (\emph{value-for-money}), sekaligus memperkaya literatur di bidang \emph{sports analytics}.
+
+\vspace{1em}
+\noindent\textbf{Kata Kunci:} \emph{Player Profiling}, \emph{Scouting}, \emph{Clustering}, \emph{Cosine Similarity}, Analitik Sepak Bola.
+
+% ----------------------------------------------------------------
+% Daftar isi
+% ----------------------------------------------------------------
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+
+% ----------------------------------------------------------------
+% Isi bab
+% ----------------------------------------------------------------
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\include{bab1}
+\include{bab2}
+\include{bab3}
+\include{bab4}
+
+% ----------------------------------------------------------------
+% Daftar Pustaka
+% ----------------------------------------------------------------
+\printbibliography[title={DAFTAR PUSTAKA}, heading=bibintoc]
+
+\end{document}

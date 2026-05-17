@@ -1,0 +1,31 @@
+\chapter{PENUTUP}
+\label{bab:penutup}
+
+\section{Ringkasan Permasalahan dan Solusi}
+\label{sec:ringkasan-masalah}
+
+Proses \emph{scouting} sepak bola modern masih banyak bergantung pada penilaian subjektif yang rentan terhadap bias dan tidak skalabel terhadap volume data pemain yang terus berkembang. Pemandu bakat sering kesulitan mengevaluasi puluhan ribu pemain di berbagai liga sekaligus memastikan bahwa kandidat yang dipilih benar-benar memiliki gaya bermain yang sesuai dengan kebutuhan taktis klub. Penelitian ini mengajukan sebuah pendekatan sistematis dan berbasis data untuk mengatasi keterbatasan tersebut.
+
+\section{Tujuan dan Metode yang Diajukan}
+\label{sec:tujuan-metode}
+
+Penelitian ini bertujuan untuk \textbf{membangun sistem rekomendasi pemain berbasis data} yang dapat (i) mengelompokkan pemain ke dalam arketipe gaya bermain yang objektif, dan (ii) menghasilkan daftar pemain alternatif yang serupa terhadap pemain target. Metode yang diusulkan mengintegrasikan dua algoritma utama:
+
+\begin{itemize}
+  \item \textbf{K-Means clustering} untuk pembentukan arketipe gaya bermain (\emph{player profiling}).
+  \item \textbf{Cosine similarity} untuk pengukuran kemiripan antar vektor pemain dalam klaster yang sama, sehingga dihasilkan rekomendasi \emph{top-k} pemain alternatif.
+\end{itemize}
+
+Validasi model dirancang melalui metrik internal --- \emph{Silhouette Coefficient} dan \emph{Davies-Bouldin Index} --- yang dikombinasikan dengan validasi heuristik berbasis \emph{Radar Chart}, untuk memastikan bahwa setiap hasil pengelompokan dan rekomendasi yang dihasilkan tidak hanya valid secara matematis, tetapi juga bermakna secara taktis dan relevan dalam konteks rekrutmen profesional.
+
+\section{Future Work}
+\label{sec:future-work}
+
+Fokus analisis yang dibatasi pada statistik individu \emph{outfield players} dan satu rentang kompetisi tertentu membuka peluang bagi penelitian lanjutan, antara lain:
+
+\begin{itemize}
+  \item Mengintegrasikan data \emph{spatiotemporal} yang lebih kaya dari sumber seperti \emph{StatsBomb Open Data} untuk memperkaya representasi gaya bermain.
+  \item Memperluas cakupan ke pemain penjaga gawang dengan kerangka kerja terpisah yang sesuai dengan karakteristik posisi tersebut.
+  \item Mengadopsi pendekatan \emph{deep learning} berbasis representasi vektor yang lebih kompleks (mis. \emph{embedding} pemain melalui jaringan saraf).
+  \item Mengembangkan antarmuka sistem yang interaktif dan mudah digunakan oleh pemandu bakat non-teknis, sebagai langkah krusial dalam mentransformasikan model konseptual ini menjadi solusi praktis yang berdampak nyata bagi industri sepak bola profesional.
+\end{itemize}
