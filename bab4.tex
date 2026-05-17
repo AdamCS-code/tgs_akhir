@@ -16,7 +16,7 @@ Penelitian ini bertujuan untuk membangun sistem rekomendasi pemain berbasis data
   \item Cosine similarity untuk pengukuran kemiripan antar vektor pemain dalam klaster yang sama, sehingga dihasilkan rekomendasi \emph{top-k} pemain alternatif.
 \end{itemize}
 
-Validasi model dirancang melalui metrik internal --- \emph{Silhouette Coefficient} dan \emph{Davies-Bouldin Index} --- yang dikombinasikan dengan validasi heuristik berbasis \emph{Radar Chart}, untuk memastikan bahwa setiap hasil pengelompokan dan rekomendasi yang dihasilkan tidak hanya valid secara matematis, tetapi juga bermakna secara taktis dan relevan dalam konteks rekrutmen profesional.
+Validasi model dirancang melalui metrik internal --- \emph{Silhouette Coefficient} dan \emph{Davies-Bouldin Index} --- yang dikombinasikan dengan evaluasi \emph{offline recommendation} menggunakan Precision@$k$ dan NDCG, untuk memastikan bahwa setiap hasil pengelompokan dan rekomendasi yang dihasilkan tidak hanya valid secara matematis, tetapi juga bermakna secara taktis dan relevan dalam konteks rekrutmen profesional.
 
 \section{Saran}
 \label{sec:saran}

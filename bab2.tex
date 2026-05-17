@@ -34,7 +34,7 @@ Terdapat dua prinsip penting dari penelitian \textcite{stein2019} yang secara la
 
 Kedua adalah prinsip normalisasi fitur sebelum pengukuran kemiripan. \textcite{stein2019} secara eksplisit menekankan bahwa fitur-fitur yang memiliki rentang nilai dan satuan yang berbeda harus dinormalisasi terlebih dahulu agar setiap dimensi memberikan kontribusi yang setara dalam perhitungan kemiripan, sehingga tidak ada satu fitur pun yang secara artifisial mendominasi hasil perhitungan hanya karena skalanya yang lebih besar. Sebagai contoh, dalam penelitian \textcite{stein2019}, kecepatan dinormalisasi berdasarkan pengetahuan domain tentang batas kecepatan wajar dalam sepak bola, sementara jarak dinormalisasi berdasarkan dimensi lapangan. Prinsip ini secara langsung mendukung dan memvalidasi penggunaan \emph{Min-Max Normalization} pada tahap pra-pemrosesan data dalam penelitian ini, di mana seluruh atribut numerik pemain diskalakan ke dalam rentang $[0, 1]$ sebelum proses \emph{clustering} maupun perhitungan \emph{cosine similarity} dilakukan. Tanpa normalisasi, fitur-fitur dengan skala besar seperti total jarak berlari dalam meter akan mendominasi perhitungan dan mengesampingkan fitur-fitur penting berskala kecil seperti persentase umpan kunci per pertandingan.
 
-Selain itu, penelitian \textcite{stein2019} juga memberikan gambaran yang jelas tentang bagaimana validasi hasil kemiripan sebaiknya dilakukan dalam domain sepak bola. Sistem yang mereka kembangkan dievaluasi melalui studi ahli yang melibatkan pelatih dan analis profesional berpengalaman, yang diminta untuk menilai secara langsung apakah hasil pencarian kemiripan yang dihasilkan sistem sesuai dengan pengetahuan domain mereka. Pendekatan validasi semacam ini, yang dalam penelitian ini diadaptasi dalam bentuk visualisasi \emph{radar chart} untuk memverifikasi kemiripan profil pemain yang direkomendasikan, terbukti menjadi metode evaluasi yang efektif dan bernilai tinggi dari perspektif kepraktisan sistem di dunia nyata.
+Selain itu, penelitian \textcite{stein2019} juga memberikan gambaran yang jelas tentang bagaimana validasi hasil kemiripan sebaiknya dilakukan dalam domain sepak bola. Sistem yang mereka kembangkan dievaluasi melalui studi ahli yang melibatkan pelatih dan analis profesional berpengalaman, yang diminta untuk menilai secara langsung apakah hasil pencarian kemiripan yang dihasilkan sistem sesuai dengan pengetahuan domain mereka. Pendekatan validasi semacam ini menunjukkan pentingnya kriteria relevansi berbasis domain sebelum hasil rekomendasi dinilai secara kuantitatif. Dalam penelitian ini, prinsip tersebut diadaptasi melalui label relevansi \emph{offline} yang digunakan pada Precision@$k$ dan NDCG, sehingga evaluasi tetap mempertimbangkan kelogisan taktis dari kandidat pemain yang direkomendasikan.
 
 \section{Sistem Rekomendasi Pemandu Bakat Berbasis Kemiripan Pemain}
 \label{sec:sistem-rekomendasi}
@@ -42,6 +42,38 @@ Selain itu, penelitian \textcite{stein2019} juga memberikan gambaran yang jelas 
 \textcite{rinaldi2024} memperkenalkan FPSRec, sebuah sistem rekomendasi pemain sepak bola yang secara khusus mengintegrasikan teknik kemiripan berbasis vektor dengan kecerdasan buatan generatif. Dalam sistem ini, setiap pemain direpresentasikan sebagai sebuah vektor berdimensi tinggi di mana setiap dimensinya merepresentasikan statistik performa seperti jumlah gol, \emph{assist}, usia, dan waktu bermain. Pendekatan ini secara konseptual selaras dengan metodologi yang diusulkan dalam penelitian ini.
 
 \textcite{rinaldi2024} membandingkan dua pendekatan utama dalam komponen pencarian pemain serupa, yaitu \emph{Cosine Similarity} murni dan kombinasi K-Means \emph{clustering} dengan \emph{Cosine Similarity}. Hasil evaluasi menggunakan korelasi Spearman dan Kendall Tau terhadap \emph{ranking} yang disediakan oleh FBRef menunjukkan bahwa \emph{Cosine Similarity} secara konsisten menghasilkan \emph{ranking} yang lebih berkorelasi dengan penilaian ahli sepak bola dibandingkan pendekatan K-Means saja. Hal ini sejalan dengan keputusan penelitian ini untuk menggunakan \emph{Cosine Similarity} sebagai inti mekanisme rekomendasi, dengan K-Means berfungsi sebagai tahap segmentasi awal untuk mempersempit ruang pencarian. Lebih lanjut, \textcite{rinaldi2024} juga mengkonfirmasi pentingnya normalisasi \emph{MinMaxScaler} sebelum proses perhitungan kemiripan dilakukan guna memastikan tidak ada fitur dengan skala besar yang mendominasi hasil komputasi.
+
+\section{\texorpdfstring{Precision@$k$}{Precision@k} dan Normalized Discounted Cumulative Gain sebagai Metrik Evaluasi Rekomendasi}
+\label{sec:precision-ndcg}
+
+Secara umum, sistem rekomendasi menyusun kandidat berdasarkan skor tertentu. Karena itu, evaluasi tidak cukup hanya memastikan skor kemiripan dapat dihitung; evaluasi juga perlu menilai apakah kandidat yang relevan muncul pada posisi teratas. Dua metrik yang umum digunakan untuk mengevaluasi kualitas daftar peringkat secara \emph{offline} adalah Precision@$k$ dan \emph{Normalized Discounted Cumulative Gain} (NDCG) \parencite{manning2009}.
+
+Precision@$k$ mengukur proporsi item relevan yang muncul pada $k$ posisi teratas daftar rekomendasi. Jika $\mathrm{rel}_i$ menyatakan relevansi kandidat pada posisi ke-$i$, maka Precision@$k$ dapat dirumuskan sebagai:
+
+\begin{equation}
+  \mathrm{Precision@}k = \frac{\sum_{i=1}^{k} \mathbb{I}(\mathrm{rel}_i > 0)}{k}
+  \label{eq:precision-k}
+\end{equation}
+
+\noindent di mana $\mathbb{I}(\mathrm{rel}_i > 0)$ bernilai 1 apabila kandidat pada posisi ke-$i$ dianggap relevan, dan 0 apabila tidak relevan. Nilai Precision@$k$ berada pada rentang $[0, 1]$; semakin tinggi nilainya, semakin besar proporsi rekomendasi teratas yang sesuai dengan kebutuhan pengguna.
+
+Meskipun Precision@$k$ mudah diinterpretasikan, metrik ini memperlakukan seluruh posisi dalam daftar top-$k$ secara setara. Padahal, dalam sistem rekomendasi, kandidat pada peringkat pertama biasanya lebih penting daripada kandidat pada peringkat kelima atau kesepuluh. Untuk menangkap kualitas urutan tersebut, digunakan \emph{Discounted Cumulative Gain} (DCG), yang memberikan bobot lebih besar pada kandidat relevan yang muncul di posisi atas:
+
+\begin{equation}
+  \mathrm{DCG@}k = \sum_{i=1}^{k} \frac{2^{\mathrm{rel}_i} - 1}{\log_2(i + 1)}
+  \label{eq:dcg-k}
+\end{equation}
+
+\noindent Nilai $\mathrm{rel}_i$ dapat berbentuk relevansi bertingkat (\emph{graded relevance}), misalnya 0 untuk tidak relevan, 1 untuk cukup relevan, dan 2 untuk sangat relevan. Karena nilai DCG dipengaruhi oleh jumlah kandidat relevan pada setiap kueri, skor tersebut kemudian dinormalisasi menggunakan nilai DCG ideal (IDCG), yaitu skor DCG tertinggi yang mungkin diperoleh apabila seluruh kandidat diurutkan secara sempurna berdasarkan relevansinya:
+
+\begin{equation}
+  \mathrm{NDCG@}k = \frac{\mathrm{DCG@}k}{\mathrm{IDCG@}k}
+  \label{eq:ndcg-k}
+\end{equation}
+
+\noindent Dengan normalisasi tersebut, NDCG menghasilkan nilai pada rentang $[0, 1]$, di mana nilai yang semakin mendekati 1 menunjukkan bahwa sistem tidak hanya menemukan kandidat yang relevan, tetapi juga menempatkan kandidat paling relevan pada posisi yang lebih tinggi dalam daftar rekomendasi.
+
+Dalam penelitian ini, Precision@$k$ digunakan untuk mengukur seberapa banyak pemain yang relevan muncul dalam daftar rekomendasi teratas, sedangkan NDCG digunakan untuk mengevaluasi kualitas urutan rekomendasi berdasarkan tingkat relevansi kandidat. Kedua metrik ini sesuai dengan keluaran sistem yang berbentuk \emph{ranking} pemain alternatif hasil perhitungan \emph{Cosine Similarity}.
 
 \section{Silhouette Coefficient sebagai Metrik Evaluasi Kualitas Klaster}
 \label{sec:silhouette}
