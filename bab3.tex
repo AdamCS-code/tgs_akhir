@@ -30,11 +30,11 @@ Pada tahap ini, dataset performa pemain sepak bola akan dikumpulkan, dipahami ka
 
 \subsubsection{Sumber dan ukuran dataset}
 
-Sumber utama yang digunakan adalah \emph{2022-2023 Football Player Stats Dataset} dari Kaggle. Dataset ini berisi statistik pertandingan pemain dari lima liga top Eropa pada musim 2022--2023 (Premier League, La Liga, Serie A, Bundesliga, dan Ligue 1) yang di-\emph{scrape} dari FBref. Setiap baris merepresentasikan satu pemain, dan kolom-kolomnya mencakup statistik agregat selama satu musim --- mulai dari waktu bermain, statistik penyerangan, distribusi umpan, aksi defensif, hingga penguasaan bola. \emph{(Catatan: jumlah eksak instans pemain dan jumlah kolom akan diverifikasi pada tahap EDA setelah dataset diunduh.)}
+Sumber utama yang digunakan adalah \emph{2022-2023 Football Player Stats Dataset} dari Kaggle. Dataset ini berisi statistik pertandingan pemain dari lima liga top Eropa pada musim 2022--2023 (Premier League, La Liga, Serie A, Bundesliga, dan Ligue 1) yang di-\emph{scrape} dari FBref. Dataset ini memuat lebih dari 2.500 baris data pemain dan 124 kolom atribut. Setiap baris merepresentasikan satu pemain, sedangkan kolom-kolomnya mencakup statistik agregat selama satu musim --- mulai dari waktu bermain, statistik penyerangan, distribusi umpan, aksi defensif, hingga penguasaan bola.
 
 \subsubsection{Kategorisasi atribut}
 
-Untuk memberikan gambaran mengenai isi dataset, kolom-kolom dapat dikelompokkan ke dalam beberapa kategori berdasarkan jenis statistik yang direpresentasikan, sebagaimana ditampilkan pada Tabel~\ref{tab:fbref-attr-categories}. Daftar contoh atribut bersifat representatif dan akan dilengkapi setelah dataset diolah pada tahap EDA.
+Untuk memberikan gambaran mengenai isi dataset, kolom-kolom dapat dikelompokkan ke dalam beberapa kategori berdasarkan jenis statistik yang direpresentasikan, sebagaimana ditampilkan pada Tabel~\ref{tab:fbref-attr-categories}. Daftar contoh atribut bersifat representatif terhadap struktur kolom dataset dan digunakan sebagai acuan awal pemilihan fitur pemodelan.
 
 \begin{longtable}{@{}p{2.6cm} p{4.2cm} p{5.7cm}@{}}
   \caption{Kategorisasi atribut pada \emph{2022-2023 Football Player Stats Dataset}.}
@@ -77,7 +77,7 @@ Setelah dataset diperoleh, data melalui serangkaian tahap pra-pemrosesan berikut
   \item Exploratory Data Analysis (EDA): Melakukan analisis eksploratif awal untuk memahami distribusi statistik setiap variabel, mengidentifikasi distribusi posisi pemain dan distribusi liga, serta mendeteksi anomali (\emph{outliers}) secara visual. Statistik deskriptif aktual (mean, standar deviasi, persentase \emph{missing values} per kolom, dan jumlah eksak instans pemain) akan dilaporkan pada tahap ini.
   \item Data Cleaning: Membersihkan \emph{missing values}, menghilangkan data pemain berposisi kiper (mengingat fokus evaluasi hanya pada \emph{outfield players}), serta menyaring pemain dengan menit bermain di bawah ambang tertentu agar statistik per pemain cukup stabil. \emph{Missing values} sporadis pada atribut lain ditangani via \emph{imputation}.
   \item Feature Engineering: Memilih variabel metrik shooting, passing, defensive, dan possession yang relevan untuk merepresentasikan kontribusi taktis pemain. Untuk mengompensasi perbedaan menit bermain antar pemain, sebagian statistik dapat dinormalisasi terlebih dahulu ke skala \emph{per 90 menit}.
-  \item Data Scaling: Menggunakan \emph{Min-Max Normalization} untuk menskalakan seluruh fitur numerik ke dalam rentang $[0, 1]$. Hal ini krusial karena atribut rating $[0, 99]$ dan atribut kontinyu (usia, tinggi, berat, nilai pasar) memiliki rentang yang berbeda, sehingga tanpa normalisasi algoritma penghitungan jarak akan didominasi atribut berskala besar \parencite{shen2026}.
+  \item Data Scaling: Menggunakan \emph{Min-Max Normalization} untuk menskalakan seluruh fitur numerik ke dalam rentang $[0, 1]$. Hal ini krusial karena fitur statistik FBref memiliki skala dan satuan yang berbeda, misalnya jumlah tembakan, total umpan, persentase akurasi umpan, tekel, intersepsi, dan sentuhan bola. Tanpa normalisasi, algoritma penghitungan jarak dan kemiripan dapat didominasi oleh fitur berskala besar \parencite{shen2026}.
 \end{itemize}
 
 \subsection{Tahap Pengolahan dan Analisis Data (Pemodelan)}
