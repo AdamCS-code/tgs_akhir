@@ -9,17 +9,17 @@ Proses \emph{scouting} sepak bola modern masih banyak bergantung pada penilaian 
 \section{Tujuan dan Metode yang Diajukan}
 \label{sec:tujuan-metode}
 
-Penelitian ini bertujuan untuk \textbf{membangun sistem rekomendasi pemain berbasis data} yang dapat (i) mengelompokkan pemain ke dalam arketipe gaya bermain yang objektif, dan (ii) menghasilkan daftar pemain alternatif yang serupa terhadap pemain target. Metode yang diusulkan mengintegrasikan dua algoritma utama:
+Penelitian ini bertujuan untuk membangun sistem rekomendasi pemain berbasis data yang dapat (i) mengelompokkan pemain ke dalam arketipe gaya bermain yang objektif, dan (ii) menghasilkan daftar pemain alternatif yang serupa terhadap pemain target. Metode yang diusulkan mengintegrasikan dua algoritma utama:
 
 \begin{itemize}
-  \item \textbf{K-Means clustering} untuk pembentukan arketipe gaya bermain (\emph{player profiling}).
-  \item \textbf{Cosine similarity} untuk pengukuran kemiripan antar vektor pemain dalam klaster yang sama, sehingga dihasilkan rekomendasi \emph{top-k} pemain alternatif.
+  \item K-Means clustering untuk pembentukan arketipe gaya bermain (\emph{player profiling}).
+  \item Cosine similarity untuk pengukuran kemiripan antar vektor pemain dalam klaster yang sama, sehingga dihasilkan rekomendasi \emph{top-k} pemain alternatif.
 \end{itemize}
 
 Validasi model dirancang melalui metrik internal --- \emph{Silhouette Coefficient} dan \emph{Davies-Bouldin Index} --- yang dikombinasikan dengan validasi heuristik berbasis \emph{Radar Chart}, untuk memastikan bahwa setiap hasil pengelompokan dan rekomendasi yang dihasilkan tidak hanya valid secara matematis, tetapi juga bermakna secara taktis dan relevan dalam konteks rekrutmen profesional.
 
-\section{Future Work}
-\label{sec:future-work}
+\section{Saran}
+\label{sec:saran}
 
 Fokus analisis yang dibatasi pada statistik individu \emph{outfield players} dan satu rentang kompetisi tertentu membuka peluang bagi penelitian lanjutan, antara lain:
 

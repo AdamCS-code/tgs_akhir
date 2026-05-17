@@ -1,7 +1,7 @@
 \chapter{PENDAHULUAN}
 \label{bab:pendahuluan}
 
-Sepak bola modern tidak lagi sekadar olahraga; ia telah berkembang menjadi industri global dengan nilai transfer pemain yang setiap tahun menembus miliaran dolar. Pada saat yang sama, perkembangan teknologi sensor \emph{event tracking}, kamera komputer-visi, dan platform statistik publik telah membuat setiap aksi pemain di lapangan dapat direkam menjadi data yang dapat dianalisis \parencite{bialkowski2014,decroos2019}. Pergeseran ini melahirkan bidang \emph{sports analytics} --- penerapan ilmu data untuk mendukung keputusan taktis, evaluasi performa, dan terutama \textbf{proses pencarian bakat (player scouting)}.
+Sepak bola modern tidak lagi sekadar olahraga; ia telah berkembang menjadi industri global dengan nilai transfer pemain yang setiap tahun menembus miliaran dolar. Pada saat yang sama, perkembangan teknologi sensor \emph{event tracking}, kamera komputer-visi, dan platform statistik publik telah membuat setiap aksi pemain di lapangan dapat direkam menjadi data yang dapat dianalisis \parencite{bialkowski2014,decroos2019}. Pergeseran ini melahirkan bidang \emph{sports analytics} --- penerapan ilmu data untuk mendukung keputusan taktis, evaluasi performa, dan terutama proses pencarian bakat (player scouting).
 
 Salah satu praktik klasik dalam \emph{scouting} adalah pengamatan langsung oleh pemandu bakat (\emph{scout}) di lapangan. Praktik ini terkendala oleh batasan geografis, waktu, dan subjektivitas penilaian manusia, sementara di sisi lain klub harus mengevaluasi puluhan ribu pemain di berbagai liga setiap musim. Dengan tersedianya data performa pemain dalam skala besar, muncul peluang untuk membangun pendekatan komputasional yang dapat (i) memetakan gaya bermain pemain secara objektif berdasarkan data, dan (ii) menyarankan pemain alternatif yang serupa dengan target yang sedang diincar klub. Penelitian ini menempatkan diri pada irisan kedua kebutuhan tersebut.
 
@@ -12,57 +12,32 @@ Sepak bola modern telah bertransformasi dari aktivitas olahraga menjadi sektor i
 
 Metode \emph{scouting} tradisional mengandalkan penilaian subjektif pengamat manusia yang dibatasi oleh geografi dan kapasitas untuk memproses ribuan profil pemain. Pada saat yang sama, permintaan terhadap pemain dengan nilai ekonomi tinggi atau \emph{value-for-money} semakin mendesak, terutama bagi klub beranggaran terbatas \parencite{mchale2023}. Karena itu, dibutuhkan pendekatan objektif yang mampu menilai kontribusi pemain secara menyeluruh, melampaui statistik klasik seperti gol dan \emph{assist} \parencite{elsharkawi2025}.
 
-\subsection{Player Profiling dan Teknik Clustering yang Telah Digunakan}
-\label{subsec:player-profiling}
+Salah satu tantangan utama dalam \emph{scouting} adalah membangun player profiling yang tepat, yakni pemetaan gaya bermain pemain berdasarkan data yang dimilikinya. Berbeda dengan pelabelan posisi tradisional yang kaku, analisis komputasional modern memungkinkan penemuan arketipe taktis langsung dari data \parencite{bialkowski2014}. Pendekatan \emph{unsupervised learning}, khususnya \emph{clustering}, banyak dieksplorasi pada literatur \emph{player profiling} untuk tujuan ini \parencite{shen2026,akif2022}. Beberapa teknik yang umum dipakai antara lain K-Means clustering dan Agglomerative Hierarchical Clustering.
 
-Salah satu tantangan utama dalam \emph{scouting} adalah membangun \textbf{player profiling} yang tepat --- yaitu pemetaan gaya bermain berdasarkan pola data yang dimiliki pemain. Berbeda dengan pelabelan posisi tradisional yang kaku, analisis komputasional modern memungkinkan penemuan arketipe taktis langsung dari data; peran spesifik pemain (\emph{roles}) dapat dipelajari dari distribusi data statistik di lapangan \parencite{bialkowski2014}. Pendekatan \emph{unsupervised learning}, khususnya \emph{clustering}, terbukti efektif untuk mendeteksi profil pemain berdasarkan pola gerakan dan keterampilan secara otomatis \parencite{shen2026}.
+Setelah profil terbentuk, langkah berikutnya adalah menemukan pemain pengganti yang karakteristiknya mirip dengan pemain target. Pada tahap ini, atribut performa pemain direpresentasikan sebagai vektor fitur sehingga pencarian kemiripan menjadi pencarian antar vektor. Metrik kemiripan yang umum digunakan pada konteks ini adalah \emph{Cosine Similarity} dan \emph{Euclidean distance}, yang masing-masing memiliki karakteristik tersendiri.
 
-Sejumlah teknik \emph{clustering} telah dieksplorasi dalam literatur \emph{player profiling}, antara lain:
-
-\begin{itemize}
-  \item \textbf{K-Means clustering} --- berbasis sentroid, mengelompokkan pemain dengan meminimalkan \emph{within-cluster sum of squares} (WCSS) \parencite{jain2010,lloyd1982}. Penelitian \textcite{aisyah2022} pada \emph{FIFA22 Official Players Dataset} menunjukkan bahwa K-Means dapat mengelompokkan pemain berdasarkan posisi dan kemampuan dengan kualitas klaster yang baik.
-  \item \textbf{Agglomerative Hierarchical Clustering} --- membangun pohon hirarki klaster berdasarkan minimisasi variansi \parencite{ward1963}. Digunakan sebagai pembanding pada penelitian \textcite{aisyah2022} untuk dataset FIFA22.
-  \item Pendekatan berbasis aksi dan kuantifikasi \emph{event data} \parencite{decroos2019} sebagai alternatif fitur input untuk \emph{clustering}.
-\end{itemize}
-
-Untuk mengevaluasi kualitas klaster yang terbentuk, literatur umum menggunakan \textbf{Silhouette Coefficient} \parencite{rousseeuw1987} dan \textbf{Davies-Bouldin Index} \parencite{davies1979}. Metrik pertama membandingkan kerapatan internal dan separasi antar-klaster, sedangkan metrik kedua mengukur rasio dispersi-separasi tanpa bergantung pada jumlah klaster atau metode pemartisian.
-
-Komparasi paling relevan untuk penelitian ini dilakukan oleh \textcite{aisyah2022} pada \emph{FIFA22 Official Players Dataset}: \textbf{K-Means menghasilkan kualitas klaster yang lebih baik dibandingkan Hierarchical Clustering}, dengan selisih \emph{silhouette score} sebesar 0,00037 pada $k=3$ dan 16\% lebih tinggi pada $k=14$. Atas dasar bukti empiris ini, penelitian ini memilih \textbf{K-Means} sebagai algoritma utama untuk \emph{player profiling}, dengan Hierarchical Clustering tetap dipertahankan sebagai \emph{baseline} pembanding untuk memastikan ketahanan hasil partisi.
-
-\subsection{Pencarian Pemain Mirip dan Justifikasi Cosine Similarity}
-\label{subsec:cosine-justifikasi}
-
-Setelah profil pemain berhasil dibentuk, langkah berikutnya pada \emph{scouting} adalah menemukan pemain pengganti yang karakteristiknya mirip dengan pemain target --- misalnya pengganti pemain yang kontraknya segera berakhir. Pada konteks ini, atribut performa pemain dapat direpresentasikan sebagai vektor fitur, sehingga pencarian ``kemiripan'' antar pemain menjadi pencarian kemiripan antar vektor.
-
-Pilihan metrik kemiripan menentukan kualitas hasil. Metrik berbasis jarak absolut seperti \emph{Euclidean distance} sensitif terhadap perbedaan \textbf{magnitudo} vektor. Pada data sepak bola, magnitudo vektor sangat dipengaruhi oleh akumulasi aksi yang merupakan fungsi dari total menit bermain --- pemain inti dengan menit bermain banyak akan memiliki magnitudo vektor jauh lebih besar dibanding pemain rotasi, meskipun gaya bermainnya bisa jadi sama. \emph{Cosine similarity} mengompensasi efek ini dengan mengukur sudut (orientasi) antara dua vektor, bukan jarak absolutnya \parencite{manning2009}. Karena tujuan rekomendasi di sini adalah mencari pemain dengan \textbf{gaya bermain} yang mirip --- bukan dengan menit bermain yang mirip --- \emph{cosine similarity} lebih sesuai dibandingkan metrik berbasis jarak absolut.
-
-\subsection{Posisi Penelitian dan Kontribusi}
-\label{subsec:posisi-penelitian}
-
-Meskipun penelitian sebelumnya telah membahas \emph{player profiling} berbasis \emph{clustering} \parencite{shen2026,aisyah2022} atau pengembangan metrik performa \parencite{elsharkawi2025}, terdapat kesenjangan dalam \textbf{mengintegrasikan profil tersebut ke dalam sistem rekomendasi yang dapat dipakai langsung oleh pemandu bakat}. Sebagian besar penelitian terhenti pada tahap klasifikasi/evaluasi klaster tanpa menjembatani hasilnya menjadi alat bantu pencarian alternatif pemain.
-
-Penelitian ini mengusulkan \textbf{integrasi K-Means clustering untuk segmentasi profil dan cosine similarity untuk pencarian \emph{top-k} pemain alternatif} sebagai sebuah sistem rekomendasi bagi pemandu bakat. Diharapkan kontribusi ini dapat menjadi rujukan baru pada irisan bidang \emph{sports analytics} dan \emph{recommender systems}.
+Meskipun penelitian sebelumnya telah membahas \emph{player profiling} berbasis \emph{clustering} \parencite{shen2026,akif2022} atau pengembangan metrik performa \parencite{elsharkawi2025}, terdapat kesenjangan dalam mengintegrasikan profil tersebut ke dalam sistem rekomendasi yang dapat dipakai langsung oleh pemandu bakat. Sebagian besar penelitian terhenti pada tahap klasifikasi atau evaluasi klaster tanpa menjembatani hasilnya menjadi alat bantu pencarian pemain alternatif. Penelitian ini mengusulkan integrasi K-Means \emph{clustering} dan \emph{Cosine Similarity} sebagai sebuah sistem rekomendasi bagi pemandu bakat. Diharapkan kontribusi penelitian ini dapat menjadi rujukan baru pada irisan bidang \emph{sports analytics} dan \emph{recommender systems}.
 
 \section{Rumusan Masalah}
 \label{sec:rumusan-masalah}
 
-Berdasarkan latar belakang dan kesenjangan yang telah diuraikan, pertanyaan penelitian yang diangkat adalah sebagai berikut:
+pertanyaan penelitian yang diangkat adalah sebagai berikut:
 
 \begin{itemize}
-  \item Bagaimana cara mengelompokkan profil gaya bermain pemain sepak bola secara objektif menggunakan algoritma \textbf{K-Means clustering}?
-  \item Seberapa efektif metode \textbf{cosine similarity} dalam menghasilkan rekomendasi \emph{top-k} pemain yang memiliki gaya bermain mirip dengan pemain yang ditargetkan?
+  \item Bagaimana cara mengelompokkan profil gaya bermain pemain sepak bola secara objektif menggunakan algoritma K-Means clustering?
+  \item Seberapa efektif metode cosine similarity dalam menghasilkan rekomendasi \emph{top-k} pemain yang memiliki gaya bermain mirip dengan pemain yang ditargetkan?
   \item Bagaimana integrasi K-Means \emph{clustering} dan \emph{cosine similarity} dapat membantu pemandu bakat dalam pengambilan keputusan rekrutmen yang lebih akurat dan dapat dipertanggungjawabkan?
 \end{itemize}
 
 \section{Tujuan Penelitian}
 \label{sec:tujuan}
 
-Tujuan penelitian ini dirumuskan sebagai \textbf{luaran (output) yang ingin dicapai}, yaitu:
+Tujuan penelitian ini dirumuskan sebagai luaran (output) yang ingin dicapai, yaitu:
 
 \begin{itemize}
-  \item Dapat \textbf{mengklasifikasikan} pemain sepak bola profesional ke dalam klaster-klaster gaya bermain (arketipe) menggunakan algoritma K-Means clustering berdasarkan data atribut teknis dan fisik secara objektif.
-  \item Dapat \textbf{membangun sistem rekomendasi pemain alternatif} berdasarkan klaster yang terbentuk, dengan memanfaatkan \emph{cosine similarity} untuk menghasilkan daftar \emph{top-k} pemain yang paling mirip terhadap pemain target.
-  \item Dapat \textbf{mengevaluasi kualitas sistem yang dibangun}, baik dari sisi struktural klaster (Silhouette Coefficient, Davies-Bouldin Index) maupun dari sisi performa rekomendasi (Precision@$k$ dan Normalized Discounted Cumulative Gain / NDCG).
+  \item Dapat mengklasifikasikan pemain sepak bola profesional ke dalam klaster-klaster gaya bermain (arketipe) menggunakan algoritma K-Means clustering berdasarkan data atribut teknis dan fisik secara objektif.
+  \item Dapat membangun sistem rekomendasi pemain alternatif berdasarkan klaster yang terbentuk, dengan memanfaatkan \emph{cosine similarity} untuk menghasilkan daftar \emph{top-k} pemain yang paling mirip terhadap pemain target.
+  \item Dapat mengevaluasi kualitas sistem yang dibangun, baik dari sisi struktural klaster (Silhouette Coefficient, Davies-Bouldin Index) maupun dari sisi performa rekomendasi (Precision@$k$ dan Normalized Discounted Cumulative Gain / NDCG).
 \end{itemize}
 
 \section{Manfaat Penelitian}
@@ -71,13 +46,13 @@ Tujuan penelitian ini dirumuskan sebagai \textbf{luaran (output) yang ingin dica
 \subsection{Manfaat Teoritis}
 \label{subsec:manfaat-teoritis}
 
-Penelitian ini diharapkan memberikan kontribusi pada pengembangan ilmu pengetahuan dan konsep teoritis dalam jangka panjang, khususnya pada irisan \textbf{analitik olahraga} dan \textbf{sistem rekomendasi}, melalui:
+Penelitian ini diharapkan memberikan kontribusi pada pengembangan ilmu pengetahuan dan konsep teoritis dalam jangka panjang, khususnya pada irisan analitik olahraga dan sistem rekomendasi, melalui:
 
 \begin{itemize}
-  \item \textbf{Penguatan bukti empiris} efektivitas algoritma K-Means clustering untuk tugas \emph{player profiling} dengan data atribut teknis, melengkapi temuan \textcite{aisyah2022} dan menjadi rujukan komparatif bagi penelitian selanjutnya.
-  \item \textbf{Pengusulan kerangka integrasi} antara \emph{unsupervised clustering} dan \emph{similarity-based recommendation} (K-Means + cosine similarity) sebagai satu pipeline utuh untuk \emph{scouting}, sebuah pendekatan yang belum banyak dieksplorasi secara terintegrasi pada literatur sebelumnya.
-  \item \textbf{Penambahan rujukan akademis} mengenai pemilihan metrik kemiripan yang sesuai untuk data dengan magnitudo tidak seragam (\emph{cosine} vs \emph{Euclidean}) pada konteks data olahraga.
-  \item Menjadi \textbf{dasar bagi penelitian lanjutan} yang ingin memperluas pendekatan ini ke jenis data lain (mis. \emph{event data} spasio-temporal) atau ke domain rekomendasi berbasis profil di luar sepak bola.
+  \item Penguatan bukti empiris efektivitas algoritma K-Means clustering untuk tugas \emph{player profiling} dengan data atribut teknis, melengkapi temuan \textcite{akif2022} dan menjadi rujukan komparatif bagi penelitian selanjutnya.
+  \item Pengusulan kerangka integrasi antara \emph{unsupervised clustering} dan \emph{similarity-based recommendation} (K-Means + cosine similarity) sebagai satu pipeline utuh untuk \emph{scouting}, sebuah pendekatan yang belum banyak dieksplorasi secara terintegrasi pada literatur sebelumnya.
+  \item Penambahan rujukan akademis mengenai pemilihan metrik kemiripan yang sesuai untuk data dengan magnitudo tidak seragam (\emph{cosine} vs \emph{Euclidean}) pada konteks data olahraga.
+  \item Menjadi dasar bagi penelitian lanjutan yang ingin memperluas pendekatan ini ke jenis data lain (mis. \emph{event data} spasio-temporal) atau ke domain rekomendasi berbasis profil di luar sepak bola.
 \end{itemize}
 
 \subsection{Manfaat Praktis}
@@ -97,68 +72,26 @@ Agar penelitian ini terarah dan terfokus, ditetapkan batasan-batasan sebagai ber
 \subsection{Dataset}
 \label{subsec:dataset}
 
-\paragraph{Sumber dan justifikasi pemilihan.}
-Penelitian ini menggunakan \textbf{FIFA22 Official Players Dataset} yang tersedia secara publik di Kaggle\footnote{\url{https://www.kaggle.com/datasets/bryanb/fifa-player-stats-database}}. Pemilihan dataset ini didasarkan pada tiga pertimbangan: (i) dataset telah digunakan pada penelitian \emph{player profiling} berbasis \emph{clustering} yang menjadi rujukan utama penelitian ini \parencite{aisyah2022}, sehingga hasilnya dapat dikomparasikan secara langsung; (ii) dataset bersifat publik, terstruktur, dan telah melalui kurasi oleh penerbit game sehingga relatif minim \emph{noise} bila dibandingkan data \emph{event} kompetisi mentah; serta (iii) cakupan global dataset memungkinkan profil pemain yang terbentuk merepresentasikan beragam liga dan gaya bermain di seluruh dunia.
-
-\paragraph{Ukuran dan struktur dataset.}
-Dataset memuat \textbf{16.710 instans pemain} dengan \textbf{65 atribut} per pemain, terdiri dari 51 atribut numerik dan 14 atribut nominal. Atribut numerik mencakup rating teknis-fisik dalam rentang $[0, 99]$ (mis. \emph{dribbling}, \emph{finishing}, \emph{shot power}) serta beberapa nilai kontinyu seperti usia, tinggi, dan berat. Atribut nominal mencakup label kategorikal seperti \emph{preferred foot}, \emph{work rate}, dan posisi pemain.
-
-\paragraph{Kategorisasi atribut.}
-Untuk memberikan gambaran lebih jelas mengenai isi dataset, ke-65 atribut dapat dikelompokkan ke dalam sepuluh kategori berdasarkan jenis informasi yang direpresentasikan, sebagaimana ditampilkan pada Tabel~\ref{tab:fifa-attr-categories}.
-
-\begin{longtable}{@{}p{2.5cm} p{4cm} p{6cm}@{}}
-  \caption{Kategorisasi atribut pada \emph{FIFA22 Official Players Dataset}.}
-  \label{tab:fifa-attr-categories} \\
-  \toprule
-  \textbf{Kategori} & \textbf{Deskripsi} & \textbf{Contoh atribut} \\
-  \midrule
-  \endfirsthead
-  \multicolumn{3}{c}{\textit{(lanjutan Tabel~\ref{tab:fifa-attr-categories})}} \\
-  \toprule
-  \textbf{Kategori} & \textbf{Deskripsi} & \textbf{Contoh atribut} \\
-  \midrule
-  \endhead
-  \midrule
-  \multicolumn{3}{r}{\textit{(berlanjut ke halaman berikutnya)}} \\
-  \endfoot
-  \bottomrule
-  \endlastfoot
-  Identity     & Informasi identitas pemain dan klub                  & \texttt{ID}, \texttt{Name}, \texttt{Age}, \texttt{Nationality}, \texttt{Club}, \texttt{Wage}, \texttt{Value} \\
-  Body         & Karakteristik fisik tubuh                            & \texttt{Height}, \texttt{Weight}, \texttt{Body Type}, \texttt{Preferred Foot} \\
-  Position     & Posisi alami dan posisi terbaik                      & \texttt{Position}, \texttt{Best Position} \\
-  Technical    & Kemampuan teknis dengan bola (rating $0$--$99$)      & \texttt{Crossing}, \texttt{Finishing}, \texttt{Heading Accuracy}, \texttt{Short Passing}, \texttt{Long Passing}, \texttt{Dribbling}, \texttt{Ball Control}, \texttt{FK Accuracy}, \texttt{Curve} \\
-  Physical     & Atribut fisik dan atletik (rating $0$--$99$)         & \texttt{Acceleration}, \texttt{Sprint Speed}, \texttt{Agility}, \texttt{Reactions}, \texttt{Balance}, \texttt{Jumping}, \texttt{Stamina}, \texttt{Strength}, \texttt{Shot Power} \\
-  Mental       & Atribut kognitif dan psikologis di lapangan          & \texttt{Aggression}, \texttt{Interceptions}, \texttt{Positioning}, \texttt{Vision}, \texttt{Composure}, \texttt{Penalties}, \texttt{Long Shots} \\
-  Defending    & Kemampuan bertahan                                   & \texttt{Marking}, \texttt{Standing Tackle}, \texttt{Sliding Tackle}, \texttt{Defensive Awareness} \\
-  Goalkeeping  & Atribut khusus penjaga gawang                        & \texttt{GK Diving}, \texttt{GK Handling}, \texttt{GK Kicking}, \texttt{GK Positioning}, \texttt{GK Reflexes} \\
-  Tactical     & Pengaturan permainan dan kebiasaan                   & \texttt{Work Rate} (Att/Def), \texttt{Weak Foot}, \texttt{Skill Moves} \\
-  Overall      & Penilaian agregat                                    & \texttt{Overall Rating}, \texttt{Potential} \\
-\end{longtable}
-
-\paragraph{Atribut yang akan dipakai untuk pemodelan.}
-Tidak seluruh atribut akan dipakai sebagai fitur input bagi algoritma. Atribut kategori \textbf{Identity} dan \textbf{Position} dipakai sebagai pengidentifikasi deskriptif --- yakni untuk menelusuri pemain hasil rekomendasi serta untuk menyaring (\emph{filter}) populasi pemodelan agar hanya memuat pemain non-kiper (lihat \S\ref{subsec:objek}). Atribut kategori \textbf{Technical}, \textbf{Physical}, \textbf{Mental}, dan \textbf{Defending} dipakai sebagai vektor fitur utama untuk dua algoritma: K-Means \emph{clustering} dalam pembentukan arketipe gaya bermain dan \emph{cosine similarity} dalam perhitungan kemiripan antar pemain. Atribut kategori \textbf{Goalkeeping} di-\emph{drop} sepenuhnya dari pemodelan karena penjaga gawang dieksklusikan; atribut \textbf{Tactical} dan \textbf{Overall} bersifat opsional dan akan ditinjau efeknya pada tahap \emph{feature selection}. Justifikasi metodologis untuk eksklusi penjaga gawang dijabarkan pada \S\ref{subsec:objek}.
-
-\paragraph{Karakteristik dan praproses ringkas.}
-Karena atribut numerik teknis-fisik berada dalam rentang skala yang sama ($0$--$99$) namun atribut kontinyu seperti usia, tinggi, berat, dan nilai pasar memiliki rentang yang sangat berbeda, seluruh atribut numerik akan dinormalisasi menggunakan \emph{Min-Max Normalization} ke rentang $[0, 1]$ sebelum komputasi jarak dilakukan. Penanganan \emph{missing values} (mayoritas berasal dari atribut spesifik posisi --- mis. atribut \emph{Goalkeeping} yang kosong bagi pemain non-kiper) akan dilakukan dengan strategi \emph{drop column} pasca-eksklusi kiper, sementara \emph{missing values} sporadis pada atribut lain akan ditangani via \emph{imputation}. Statistik deskriptif aktual (mean, standar deviasi, persentase \emph{missing values} per kolom, dan distribusi posisi pemain) akan diverifikasi dan dilaporkan pada tahap \emph{Exploratory Data Analysis} di Bab~\ref{bab:metodologi} \S\ref{subsec:pra-pemrosesan}; detail teknis praproses lengkap juga dipaparkan di sub-bab tersebut.
+Penelitian ini menggunakan \emph{2022-2023 Football Player Stats Dataset} yang tersedia secara publik di Kaggle\footnote{\url{https://www.kaggle.com/datasets/vivovinco/20222023-football-player-stats}}. Dataset ini berisi statistik pertandingan pemain dari lima liga top Eropa pada musim 2022--2023 (Premier League, La Liga, Serie A, Bundesliga, dan Ligue 1) yang di-\emph{scrape} dari FBref. Dataset ini dipilih karena (i) memuat statistik pertandingan nyata yang merepresentasikan kontribusi taktis pemain secara langsung --- lebih kuat secara konstruk dibandingkan rating berbasis game; (ii) mencakup pemain dari lima liga elite Eropa sehingga representasi gaya bermain bersifat beragam dan kompetitif; serta (iii) memuat puluhan atribut performa (mis. statistik tembakan, umpan, pertahanan, dan penguasaan bola) yang relevan untuk membangun vektor fitur \emph{player profiling}.
 
 \subsection{Objek Penelitian}
 \label{subsec:objek}
 
-Objek penelitian dibatasi pada \textbf{pemain non-kiper (\emph{outfield players})} --- yaitu bek, gelandang, dan penyerang. Penjaga gawang (\emph{goalkeepers}) dieksklusikan dari dataset pemodelan karena, sebagaimana ditunjukkan oleh \textcite{tienzavalverde2023}, penjaga gawang terlibat dalam permainan dengan cara yang \textbf{secara fundamental berbeda} dibandingkan pemain lainnya: indikator performa kunci untuk kiper (mis. \emph{saves}, \emph{clean sheets}, \emph{positioning} di garis gawang) tidak relevan untuk pemain lapangan, dan sebaliknya atribut seperti \emph{dribbling}, \emph{shot power}, atau \emph{passing} tidak menggambarkan performa kiper. Distribusi fitur yang asimetris ini akan \textbf{mendistorsi struktur klaster} jika kiper ikut disertakan, sehingga eksklusi diperlukan agar profil pemain lapangan yang terbentuk valid dan dapat ditafsirkan.
+Objek penelitian dibatasi pada pemain non-kiper (\emph{outfield players}) --- yaitu bek, gelandang, dan penyerang. Penjaga gawang (\emph{goalkeepers}) dieksklusikan dari dataset pemodelan karena, sebagaimana ditunjukkan oleh \textcite{tienzavalverde2023}, penjaga gawang terlibat dalam permainan dengan cara yang secara fundamental berbeda dibandingkan pemain lainnya: indikator performa kunci untuk kiper (mis. \emph{saves}, \emph{clean sheets}, \emph{positioning} di garis gawang) tidak relevan untuk pemain lapangan, dan sebaliknya atribut seperti \emph{dribbling}, \emph{shot power}, atau \emph{passing} tidak menggambarkan performa kiper. Distribusi fitur yang asimetris ini akan mendistorsi struktur klaster jika kiper ikut disertakan, sehingga eksklusi diperlukan agar profil pemain lapangan yang terbentuk valid dan dapat ditafsirkan.
 
 \subsection{Metode Utama}
 \label{subsec:metode}
 
 \begin{itemize}
-  \item \emph{Player profiling} dibatasi pada pendekatan \emph{unsupervised learning}, secara spesifik \textbf{K-Means clustering}, dengan \textbf{Agglomerative Hierarchical Clustering} sebagai \emph{baseline} pembanding.
-  \item \emph{Sistem rekomendasi} dibatasi pada perhitungan kemiripan berbasis \textbf{cosine similarity} untuk menghasilkan daftar \emph{top-k} pemain mirip terhadap pemain target.
+  \item \emph{Player profiling} dibatasi pada pendekatan \emph{unsupervised learning}, secara spesifik K-Means clustering.
+  \item \emph{Sistem rekomendasi} dibatasi pada perhitungan kemiripan berbasis cosine similarity untuk menghasilkan daftar \emph{top-k} pemain mirip terhadap pemain target.
   \item Evaluasi dibatasi pada metrik \emph{internal clustering} (Silhouette Coefficient, Davies-Bouldin Index) dan metrik \emph{offline recommendation} (Precision@$k$, NDCG), tanpa melibatkan evaluasi \emph{online} atau pengguna sungguhan.
 \end{itemize}
 
 \subsection{Fokus Analisis}
 \label{subsec:fokus}
 
-Penelitian ini berfokus pada \textbf{statistik individu pemain} untuk mengukur gaya dan kontribusi bermain. Penelitian ini \textbf{tidak} membahas prediksi hasil pertandingan (\emph{match outcome}), performa finansial klub secara keseluruhan, atau evaluasi sistem rekomendasi secara \emph{online} terhadap pengguna nyata.
+Penelitian ini berfokus pada statistik individu pemain untuk mengukur gaya dan kontribusi bermain. Penelitian ini tidak membahas prediksi hasil pertandingan (\emph{match outcome}), performa finansial klub secara keseluruhan, atau evaluasi sistem rekomendasi secara \emph{online} terhadap pengguna nyata.
 
 \section{Sistematika Penulisan}
 \label{sec:sistematika}
@@ -166,8 +99,8 @@ Penelitian ini berfokus pada \textbf{statistik individu pemain} untuk mengukur g
 \emph{Research proposal} ini terdiri dari empat bab dengan rincian sebagai berikut:
 
 \begin{itemize}
-  \item \textbf{Bab 1 --- Pendahuluan} memaparkan latar belakang permasalahan \emph{player scouting}, rumusan masalah, tujuan dan manfaat penelitian, serta ruang lingkup yang membatasi pembahasan.
-  \item \textbf{Bab 2 --- Tinjauan Pustaka} menguraikan teori dan literatur yang menjadi landasan penelitian, mencakup \emph{cosine similarity}, \emph{silhouette coefficient}, \emph{Davies-Bouldin Index}, \emph{elbow method}, dan algoritma K-Means clustering, beserta penelitian terdahulu yang relevan.
-  \item \textbf{Bab 3 --- Metodologi Penelitian} menjelaskan kerangka kerja penelitian dari tahap identifikasi masalah, studi literatur, pengumpulan dan pra-pemrosesan data, pemodelan, hingga evaluasi.
-  \item \textbf{Bab 4 --- Penutup} memaparkan kesimpulan awal serta arah pengembangan (\emph{future work}) yang dimungkinkan setelah penelitian ini berlangsung.
+  \item Bab 1 --- Pendahuluan memaparkan latar belakang permasalahan \emph{player scouting}, rumusan masalah, tujuan dan manfaat penelitian, serta ruang lingkup yang membatasi pembahasan.
+  \item Bab 2 --- Tinjauan Pustaka menguraikan teori dan literatur yang menjadi landasan penelitian, mencakup \emph{cosine similarity}, \emph{silhouette coefficient}, \emph{Davies-Bouldin Index}, \emph{elbow method}, dan algoritma K-Means clustering, beserta penelitian terdahulu yang relevan.
+  \item Bab 3 --- Metodologi Penelitian menjelaskan kerangka kerja penelitian dari tahap identifikasi masalah, studi literatur, pengumpulan dan pra-pemrosesan data, pemodelan, hingga evaluasi.
+  \item Bab 4 --- Penutup memaparkan kesimpulan awal serta saran pengembangan yang dimungkinkan setelah penelitian ini berlangsung.
 \end{itemize}

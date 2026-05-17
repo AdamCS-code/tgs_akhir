@@ -6,7 +6,7 @@ Bab ini menjelaskan metodologi yang digunakan untuk melaksanakan penelitian ini.
 \section{Pendekatan Penelitian}
 \label{sec:pendekatan}
 
-Penelitian ini akan dilakukan menggunakan pendekatan \textbf{kuantitatif deskriptif-komputasional} \emph{(non-eksperimental)}. Penelitian kuantitatif didasarkan pada pengumpulan dan pemrosesan data angka atau variabel yang dapat diukur secara statistik. Berbeda dengan penelitian eksperimental yang melibatkan kelompok perlakuan dan kelompok kontrol untuk menguji hubungan kausal, penelitian ini tidak melakukan intervensi terhadap subjek; melainkan menganalisis dan mengelompokkan data atribut pemain sepak bola yang telah tersedia. Melalui pendekatan ini, sebuah model \emph{machine learning pipeline} secara kuantitatif memproses \emph{raw event data} pemain sepak bola, mengelompokkannya (klasterisasi), dan kemudian menghitung jarak vektor kemiripan secara matematis untuk memberikan rekomendasi yang terukur.
+Penelitian ini akan dilakukan menggunakan pendekatan kuantitatif deskriptif-komputasional \emph{(non-eksperimental)}. Penelitian kuantitatif didasarkan pada pengumpulan dan pemrosesan data angka atau variabel yang dapat diukur secara statistik. Berbeda dengan penelitian eksperimental yang melibatkan kelompok perlakuan dan kelompok kontrol untuk menguji hubungan kausal, penelitian ini tidak melakukan intervensi terhadap subjek; melainkan menganalisis dan mengelompokkan data atribut pemain sepak bola yang telah tersedia. Melalui pendekatan ini, sebuah model \emph{machine learning pipeline} secara kuantitatif memproses \emph{raw event data} pemain sepak bola, mengelompokkannya (klasterisasi), dan kemudian menghitung jarak vektor kemiripan secara matematis untuk memberikan rekomendasi yang terukur.
 
 \section{Tahapan Penelitian}
 \label{sec:tahapan}
@@ -26,13 +26,58 @@ Tahap ini menjadi landasan teoritis dengan mengidentifikasi sumber-sumber litera
 \subsection{Tahap Pengumpulan dan Pra-pemrosesan Data}
 \label{subsec:pra-pemrosesan}
 
-Pada tahap ini, dataset statistik performa pemain sepak bola profesional akan dikumpulkan dari penyedia data olahraga (seperti \emph{StatsBomb Open Data} atau FBRef, dengan FIFA22 Official Players Dataset sebagai sumber utama yang telah dipaparkan pada Bab~\ref{bab:pendahuluan}). Data tersebut kemudian melalui tahap pra-pemrosesan (\emph{preprocessing}), di antaranya:
+Pada tahap ini, dataset performa pemain sepak bola akan dikumpulkan, dipahami karakteristiknya, lalu disiapkan untuk dijadikan input bagi algoritma pemodelan.
+
+\subsubsection{Sumber dan ukuran dataset}
+
+Sumber utama yang digunakan adalah \emph{2022-2023 Football Player Stats Dataset} dari Kaggle. Dataset ini berisi statistik pertandingan pemain dari lima liga top Eropa pada musim 2022--2023 (Premier League, La Liga, Serie A, Bundesliga, dan Ligue 1) yang di-\emph{scrape} dari FBref. Setiap baris merepresentasikan satu pemain, dan kolom-kolomnya mencakup statistik agregat selama satu musim --- mulai dari waktu bermain, statistik penyerangan, distribusi umpan, aksi defensif, hingga penguasaan bola. \emph{(Catatan: jumlah eksak instans pemain dan jumlah kolom akan diverifikasi pada tahap EDA setelah dataset diunduh.)}
+
+\subsubsection{Kategorisasi atribut}
+
+Untuk memberikan gambaran mengenai isi dataset, kolom-kolom dapat dikelompokkan ke dalam beberapa kategori berdasarkan jenis statistik yang direpresentasikan, sebagaimana ditampilkan pada Tabel~\ref{tab:fbref-attr-categories}. Daftar contoh atribut bersifat representatif dan akan dilengkapi setelah dataset diolah pada tahap EDA.
+
+\begin{longtable}{@{}p{2.6cm} p{4.2cm} p{5.7cm}@{}}
+  \caption{Kategorisasi atribut pada \emph{2022-2023 Football Player Stats Dataset}.}
+  \label{tab:fbref-attr-categories} \\
+  \toprule
+  Kategori & Deskripsi & Contoh atribut \\
+  \midrule
+  \endfirsthead
+  \multicolumn{3}{c}{\textit{(lanjutan Tabel~\ref{tab:fbref-attr-categories})}} \\
+  \toprule
+  Kategori & Deskripsi & Contoh atribut \\
+  \midrule
+  \endhead
+  \midrule
+  \multicolumn{3}{r}{\textit{(berlanjut ke halaman berikutnya)}} \\
+  \endfoot
+  \bottomrule
+  \endlastfoot
+  Identity              & Informasi identitas pemain dan klub                                & \texttt{Rk}, \texttt{Player}, \texttt{Nation}, \texttt{Squad}, \texttt{Comp}, \texttt{Age}, \texttt{Born} \\
+  Position              & Posisi alami pemain di lapangan                                    & \texttt{Pos} \\
+  Playing Time          & Akumulasi waktu bermain selama musim                               & \texttt{MP} (matches played), \texttt{Starts}, \texttt{Min}, \texttt{90s} \\
+  Shooting              & Statistik tembakan dan konversi gol                                & \texttt{Goals}, \texttt{Shots}, \texttt{Shots on Target}, \texttt{SoT\%}, \texttt{G/Sh}, \texttt{Dist}, \texttt{PK} \\
+  Passing               & Statistik umpan (akurasi, jarak, progresif)                        & \texttt{Cmp}, \texttt{Att}, \texttt{Cmp\%}, \texttt{TotDist}, \texttt{PrgDist}, \texttt{Short/Medium/Long Cmp\%} \\
+  Pass Types            & Klasifikasi jenis umpan                                            & \texttt{Live}, \texttt{Dead}, \texttt{FK}, \texttt{TB}, \texttt{Crs}, \texttt{CK} \\
+  Goal/Shot Creation    & Aksi yang menciptakan peluang gol                                  & \texttt{SCA}, \texttt{GCA}, \texttt{SCA Types}, \texttt{GCA Types} \\
+  Defensive Actions     & Statistik aksi bertahan                                            & \texttt{Tackles}, \texttt{TklW}, \texttt{Interceptions}, \texttt{Blocks}, \texttt{Clearances} \\
+  Possession            & Penguasaan bola dan progresi                                       & \texttt{Touches}, \texttt{Carries}, \texttt{PrgC}, \texttt{Successful Dribbles}, \texttt{1/3}, \texttt{CPA} \\
+  Miscellaneous         & Pelanggaran, kartu, statistik lain                                 & \texttt{CrdY}, \texttt{CrdR}, \texttt{Fls}, \texttt{Fld}, \texttt{Off}, \texttt{Recov} \\
+\end{longtable}
+
+\subsubsection{Atribut yang dipakai untuk pemodelan}
+
+Tidak seluruh atribut akan dipakai sebagai fitur input bagi algoritma. Atribut kategori Identity dan Position dipakai sebagai pengidentifikasi deskriptif --- yakni untuk menelusuri pemain hasil rekomendasi serta untuk menyaring (\emph{filter}) populasi pemodelan agar hanya memuat pemain non-kiper (lihat Bab~\ref{bab:pendahuluan} \S\ref{subsec:objek}). Atribut Playing Time juga dipakai sebagai filter (mis. \texttt{Min} atau \texttt{90s} untuk membatasi populasi pada pemain dengan menit bermain yang representatif). Atribut kategori Shooting, Passing, Pass Types, Goal/Shot Creation, Defensive Actions, dan Possession dipakai sebagai vektor fitur utama untuk dua algoritma: K-Means \emph{clustering} dalam pembentukan arketipe gaya bermain dan \emph{cosine similarity} dalam perhitungan kemiripan antar pemain. Atribut kategori Miscellaneous bersifat opsional dan akan ditinjau efeknya pada tahap \emph{feature selection}.
+
+\subsubsection{Tahapan pra-pemrosesan}
+
+Setelah dataset diperoleh, data melalui serangkaian tahap pra-pemrosesan berikut sebelum dimasukkan ke algoritma pemodelan:
 
 \begin{itemize}
-  \item \textbf{Exploratory Data Analysis (EDA)}: Melakukan analisis eksploratif awal untuk memahami distribusi statistik setiap variabel dan mendeteksi adanya data anomali (\emph{outliers}) secara visual.
-  \item \textbf{Data Cleaning}: Membersihkan \emph{missing values} dan menghilangkan data pemain berposisi kiper (mengingat fokus evaluasi hanya pada \emph{outfield players}).
-  \item \textbf{Feature Engineering}: Memilih variabel metrik teknis dan fisik yang relevan untuk merepresentasikan kontribusi taktis.
-  \item \textbf{Data Scaling}: Menggunakan standarisasi, seperti \emph{Min-Max Normalization}, untuk menskalakan fitur numerik ke dalam rentang $[0, 1]$.
+  \item Exploratory Data Analysis (EDA): Melakukan analisis eksploratif awal untuk memahami distribusi statistik setiap variabel, mengidentifikasi distribusi posisi pemain dan distribusi liga, serta mendeteksi anomali (\emph{outliers}) secara visual. Statistik deskriptif aktual (mean, standar deviasi, persentase \emph{missing values} per kolom, dan jumlah eksak instans pemain) akan dilaporkan pada tahap ini.
+  \item Data Cleaning: Membersihkan \emph{missing values}, menghilangkan data pemain berposisi kiper (mengingat fokus evaluasi hanya pada \emph{outfield players}), serta menyaring pemain dengan menit bermain di bawah ambang tertentu agar statistik per pemain cukup stabil. \emph{Missing values} sporadis pada atribut lain ditangani via \emph{imputation}.
+  \item Feature Engineering: Memilih variabel metrik shooting, passing, defensive, dan possession yang relevan untuk merepresentasikan kontribusi taktis pemain. Untuk mengompensasi perbedaan menit bermain antar pemain, sebagian statistik dapat dinormalisasi terlebih dahulu ke skala \emph{per 90 menit}.
+  \item Data Scaling: Menggunakan \emph{Min-Max Normalization} untuk menskalakan seluruh fitur numerik ke dalam rentang $[0, 1]$. Hal ini krusial karena atribut rating $[0, 99]$ dan atribut kontinyu (usia, tinggi, berat, nilai pasar) memiliki rentang yang berbeda, sehingga tanpa normalisasi algoritma penghitungan jarak akan didominasi atribut berskala besar \parencite{shen2026}.
 \end{itemize}
 
 \subsection{Tahap Pengolahan dan Analisis Data (Pemodelan)}
@@ -41,8 +86,8 @@ Pada tahap ini, dataset statistik performa pemain sepak bola profesional akan di
 Tahap komputasi inti dari penelitian ini dibagi menjadi dua fase algoritma:
 
 \begin{enumerate}
-  \item \textbf{Fase Clustering}: Menggunakan algoritma K-Means \emph{clustering} untuk menstrukturkan data tak berlabel ke dalam penemuan pola tersembunyi \parencite{shen2026}. Penulis akan menggunakan \emph{Elbow Method} (lihat Persamaan~\eqref{eq:sse} pada Bab~\ref{bab:tinjauan-pustaka}) untuk menentukan jumlah arketipe gaya bermain (jumlah klaster $K$) yang optimal secara komputasi.
-  \item \textbf{Fase Rekomendasi (Cosine Similarity)}: Setelah pemain masuk ke dalam klaster gaya bermainnya masing-masing, sistem rekomendasi diterapkan. Saat pengguna memasukkan pemain target (pemain incaran atau yang cedera), model akan merepresentasikan atribut pemain target sebagai vektor, kemudian membandingkannya dengan vektor pemain lain di klaster yang sama menggunakan perhitungan \emph{Cosine Similarity} (Persamaan~\eqref{eq:cosine}). Model akan menghasilkan daftar peringkat (\emph{ranking}) pemain alternatif dengan nilai kemiripan tertinggi (mendekati nilai 1).
+  \item Fase Clustering: Menggunakan algoritma K-Means \emph{clustering} untuk menstrukturkan data tak berlabel ke dalam penemuan pola tersembunyi \parencite{shen2026}. Penulis akan menggunakan \emph{Elbow Method} (Persamaan~\eqref{eq:sse}) untuk menentukan jumlah arketipe gaya bermain (jumlah klaster $K$) yang optimal secara komputasi.
+  \item Fase Rekomendasi (Cosine Similarity): Setelah pemain masuk ke dalam klaster gaya bermainnya masing-masing, sistem rekomendasi diterapkan. Saat pengguna memasukkan pemain target (pemain incaran atau yang cedera), model akan merepresentasikan atribut pemain target sebagai vektor, kemudian membandingkannya dengan vektor pemain lain di klaster yang sama menggunakan perhitungan \emph{Cosine Similarity} (Persamaan~\eqref{eq:cosine}). Model akan menghasilkan daftar peringkat (\emph{ranking}) pemain alternatif dengan nilai kemiripan tertinggi (mendekati nilai 1).
 \end{enumerate}
 
 \subsection{Tahap Evaluasi Model dan Penarikan Kesimpulan}
@@ -51,9 +96,9 @@ Tahap komputasi inti dari penelitian ini dibagi menjadi dua fase algoritma:
 Pada tahap akhir, penulis mengevaluasi performa model yang telah dibangun melalui dua pendekatan pengujian. Mengingat fase \emph{clustering} menggunakan pendekatan \emph{unsupervised learning} yang tidak memiliki label data aktual (\emph{ground truth}), pengujian akurasi tradisional tidak dapat dilakukan. Oleh karena itu, evaluasi model dibagi menjadi dua tahap validasi:
 
 \begin{enumerate}
-  \item \textbf{Evaluasi Kualitas Klaster (Metrik Internal)}: Pengujian ini bertujuan untuk mengukur secara kuantitatif dan matematis seberapa baik struktur klaster yang dibentuk oleh algoritma. Pengukuran dilakukan menggunakan indeks metrik internal --- \emph{Silhouette Coefficient} (Persamaan~\eqref{eq:silhouette}) dan \emph{Davies-Bouldin Index} (Persamaan~\eqref{eq:dbi}) --- yang formulasi dan interpretasinya telah dijabarkan pada Bab~\ref{bab:tinjauan-pustaka}.
+  \item Evaluasi Kualitas Klaster (Metrik Internal): Pengujian ini bertujuan untuk mengukur secara kuantitatif dan matematis seberapa baik struktur klaster yang dibentuk oleh algoritma. Pengukuran dilakukan menggunakan indeks metrik internal --- \emph{Silhouette Coefficient} (Persamaan~\eqref{eq:silhouette}) dan \emph{Davies-Bouldin Index} (Persamaan~\eqref{eq:dbi}).
 
-  \item \textbf{Validasi Heuristik Sistem Rekomendasi}: Untuk mengevaluasi keandalan (\emph{reliability}) hasil rekomendasi dari perhitungan \emph{Cosine Similarity}, validasi dilakukan secara komparatif dan visual. Sistem akan menguji skenario pencarian pemain target, lalu hasil rekomendasi pemain substitusi divisualisasikan menggunakan grafik jaring laba-laba (\emph{Radar Chart}). Apabila kurva distribusi metrik performa antara pemain target dan pemain yang direkomendasikan saling tumpang tindih (\emph{overlapping}) dengan bentuk yang identik, maka rekomendasi tersebut dibuktikan valid, akurat, dan masuk akal secara ilmu taktik sepak bola (\emph{domain knowledge}).
+  \item Validasi Heuristik Sistem Rekomendasi: Untuk mengevaluasi keandalan (\emph{reliability}) hasil rekomendasi dari perhitungan \emph{Cosine Similarity}, validasi dilakukan secara komparatif dan visual. Sistem akan menguji skenario pencarian pemain target, lalu hasil rekomendasi pemain substitusi divisualisasikan menggunakan grafik jaring laba-laba (\emph{Radar Chart}). Apabila kurva distribusi metrik performa antara pemain target dan pemain yang direkomendasikan saling tumpang tindih (\emph{overlapping}) dengan bentuk yang identik, maka rekomendasi tersebut dibuktikan valid, akurat, dan masuk akal secara ilmu taktik sepak bola (\emph{domain knowledge}).
 \end{enumerate}
 
 Dari hasil evaluasi terintegrasi pada kedua tahap tersebut, penulis akan menarik kesimpulan akhir untuk menjawab rumusan masalah secara menyeluruh serta menyusun saran pengembangan untuk sistem \emph{scouting} olahraga di masa mendatang.
@@ -63,6 +108,6 @@ Dari hasil evaluasi terintegrasi pada kedua tahap tersebut, penulis akan menarik
 
 Penelitian ini merupakan penelitian kuantitatif deskriptif-komputasional. Oleh karena itu, instrumen utama yang digunakan dalam penelitian ini adalah perangkat lunak komputasi dan pemodelan algoritma \emph{machine learning}. Penulis akan menggunakan bahasa pemrograman Python beserta pustaka (\emph{library}) komputasi data saintifik seperti \emph{Scikit-learn}, \emph{Pandas}, dan \emph{NumPy} sebagai instrumen perangkat lunak untuk mengolah data dan membangun model.
 
-Himpunan data yang akan digunakan sebagai objek penelitian berupa \emph{event data} atau statistik performa pemain --- secara spesifik FIFA22 Official Players Dataset (lihat Bab~\ref{bab:pendahuluan} Sub-bab~\ref{subsec:dataset}) --- yang diperoleh dari Kaggle. Secara algoritmik, instrumen pemodelan dalam penelitian ini dibagi menjadi dua. Pertama, algoritma K-Means \emph{Clustering} digunakan sebagai instrumen untuk memproses data performa yang telah distandardisasi guna mendeteksi dan mengelompokkan arketipe gaya bermain pemain secara otomatis. Kedua, perhitungan \emph{Cosine Similarity} digunakan sebagai instrumen pencarian untuk membandingkan vektor metrik antarpemain di dalam klaster yang sama guna memberikan skor kemiripan.
+Himpunan data yang akan digunakan sebagai objek penelitian berupa statistik pertandingan pemain --- secara spesifik \emph{2022-2023 Football Player Stats Dataset} yang di-\emph{scrape} dari FBref --- yang diperoleh dari Kaggle. Secara algoritmik, instrumen pemodelan dalam penelitian ini dibagi menjadi dua. Pertama, algoritma K-Means \emph{Clustering} digunakan sebagai instrumen untuk memproses data performa yang telah distandardisasi guna mendeteksi dan mengelompokkan arketipe gaya bermain pemain secara otomatis. Kedua, perhitungan \emph{Cosine Similarity} digunakan sebagai instrumen pencarian untuk membandingkan vektor metrik antarpemain di dalam klaster yang sama guna memberikan skor kemiripan.
 
 Selanjutnya, untuk mengukur keberhasilan model, instrumen evaluasi yang digunakan adalah persamaan matematis \emph{Silhouette Coefficient} dan \emph{Davies-Bouldin Index} (DBI) untuk validasi kualitas pengelompokan data, serta instrumen visual berupa \emph{Radar Chart} untuk memvalidasi kelogisan hasil rekomendasi secara taktis.
